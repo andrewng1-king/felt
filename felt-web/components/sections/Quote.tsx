@@ -1,27 +1,18 @@
-import Image from "next/image";
 import { Reveal } from "@/components/ui/Reveal";
 import { quote } from "@/content/site";
 
 export function Quote() {
   return (
-    <section className="border-t border-zinc-200 px-6 py-24 lg:py-32">
+    <section className="border-t border-stone-200/70 px-6 py-24 lg:py-32">
       <Reveal className="mx-auto max-w-4xl">
-        <blockquote className="text-2xl font-medium leading-snug tracking-tight text-zinc-900 sm:text-3xl">
+        <blockquote className="font-display text-[1.7rem] italic leading-[1.4] tracking-tight text-stone-900 sm:text-[2.1rem] sm:leading-[1.35]">
           &ldquo;{quote.body}&rdquo;
         </blockquote>
         <div className="mt-8 flex items-center gap-4">
-          <div className="relative h-12 w-12 overflow-hidden rounded-full bg-zinc-200">
-            <Image
-              src="https://picsum.photos/seed/felt-marisol/120/120"
-              alt={quote.name}
-              fill
-              sizes="48px"
-              className="img-editorial object-cover"
-            />
-          </div>
+          <span className="h-px w-10 bg-emerald-700" aria-hidden />
           <div className="text-sm">
-            <p className="font-semibold text-zinc-900">{quote.name}</p>
-            <p className="text-zinc-500">{quote.role}</p>
+            <span className="font-medium text-stone-900">{quote.name}</span>
+            <span className="text-stone-500">, {quote.role}</span>
           </div>
         </div>
       </Reveal>

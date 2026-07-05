@@ -8,7 +8,7 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary: "bg-emerald-700 text-white hover:bg-emerald-800",
-  ghost: "border border-zinc-300 text-zinc-900 hover:bg-zinc-900/5",
+  ghost: "border border-stone-300 text-stone-900 hover:bg-stone-900/5",
 };
 
 type Props = {

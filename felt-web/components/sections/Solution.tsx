@@ -6,33 +6,41 @@ const icons = [Compass, Eye, ChartLineUp];
 
 export function Solution() {
   return (
-    <section id="how" className="bg-zinc-900 px-6 py-24 text-zinc-100 lg:py-32">
+    <section id="how" className="bg-stone-950 px-6 py-24 text-stone-100 lg:py-32">
       <div className="mx-auto max-w-6xl">
         <Reveal>
-          <h2 className="max-w-2xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+          <h2 className="font-display max-w-2xl text-3xl leading-[1.15] tracking-tight sm:text-4xl">
             {solution.heading}
           </h2>
         </Reveal>
 
-        <div className="mt-16 grid gap-12 md:grid-cols-3">
+        <ol className="relative mt-16 max-w-2xl">
+          <div
+            className="absolute bottom-6 left-[21px] top-6 w-px bg-stone-800"
+            aria-hidden
+          />
           {solution.phases.map((phase, i) => {
             const Icon = icons[i];
             return (
               <Reveal key={phase.tag} delay={i * 0.1}>
-                <div className="border-t border-zinc-700 pt-6">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400">
-                    <Icon size={22} weight="light" />
+                <li className="relative flex gap-6 pb-12 last:pb-0">
+                  <span className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400 ring-4 ring-stone-950">
+                    <Icon size={20} weight="light" />
                   </span>
-                  <p className="mt-6 text-xs font-medium uppercase tracking-[0.18em] text-emerald-400">
-                    {phase.tag}
-                  </p>
-                  <h3 className="mt-2 text-xl font-semibold tracking-tight">{phase.title}</h3>
-                  <p className="mt-3 leading-relaxed text-zinc-400">{phase.body}</p>
-                </div>
+                  <div className="pt-1">
+                    <p className="text-xs font-medium uppercase tracking-[0.18em] text-emerald-400">
+                      {phase.tag}
+                    </p>
+                    <h3 className="font-display mt-2 text-xl tracking-tight text-white sm:text-2xl">
+                      {phase.title}
+                    </h3>
+                    <p className="mt-2 max-w-md leading-relaxed text-stone-400">{phase.body}</p>
+                  </div>
+                </li>
               </Reveal>
             );
           })}
-        </div>
+        </ol>
       </div>
     </section>
   );

@@ -25,12 +25,12 @@ export function Waitlist() {
   }
 
   return (
-    <section id="waitlist" className="border-t border-zinc-200 bg-emerald-50 px-6 py-24 lg:py-32">
+    <section id="waitlist" className="border-t border-stone-200/70 bg-emerald-50/60 px-6 py-24 lg:py-32">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-semibold leading-tight tracking-tight text-zinc-900 sm:text-4xl">
+        <h2 className="font-display text-3xl leading-[1.15] tracking-tight text-stone-900 sm:text-4xl lg:text-[2.75rem]">
           {finalCta.heading}
         </h2>
-        <p className="mx-auto mt-5 max-w-md text-lg leading-relaxed text-zinc-600">
+        <p className="mx-auto mt-5 max-w-md text-lg leading-relaxed text-stone-600">
           {finalCta.body}
         </p>
 
@@ -54,7 +54,7 @@ export function Waitlist() {
                   if (status === "error") setStatus("idle");
                 }}
                 placeholder="you@company.com"
-                className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/30"
+                className="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-stone-900 placeholder:text-stone-400 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/30"
               />
               <button
                 type="submit"

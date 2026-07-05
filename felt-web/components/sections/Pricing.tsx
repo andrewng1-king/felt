@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 
 export function Pricing() {
   return (
-    <section id="pricing" className="border-t border-zinc-200 px-6 py-24 lg:py-32">
+    <section id="pricing" className="border-t border-stone-200/70 px-6 py-24 lg:py-32">
       <div className="mx-auto max-w-6xl">
         <Reveal>
-          <h2 className="max-w-2xl text-3xl font-semibold leading-tight tracking-tight text-zinc-900 sm:text-4xl">
+          <h2 className="font-display max-w-2xl text-3xl leading-[1.15] tracking-tight text-stone-900 sm:text-4xl">
             {pricing.heading}
           </h2>
         </Reveal>
@@ -21,8 +21,8 @@ export function Pricing() {
                 className={cn(
                   "flex h-full flex-col rounded-2xl p-8",
                   tier.featured
-                    ? "bg-zinc-900 text-white ring-1 ring-zinc-900"
-                    : "border border-zinc-200 bg-white text-zinc-900",
+                    ? "bg-stone-950 text-white ring-1 ring-stone-950"
+                    : "border border-stone-200 bg-white text-stone-900",
                 )}
               >
                 {tier.featured && (
@@ -33,11 +33,11 @@ export function Pricing() {
                 <h3 className="text-lg font-semibold tracking-tight">{tier.name}</h3>
                 <div className="mt-4 flex items-baseline gap-1">
                   <span className="text-4xl font-semibold tracking-tight">{tier.price}</span>
-                  <span className={cn("text-sm", tier.featured ? "text-zinc-400" : "text-zinc-500")}>
+                  <span className={cn("text-sm", tier.featured ? "text-stone-400" : "text-stone-500")}>
                     {tier.cadence}
                   </span>
                 </div>
-                <p className={cn("mt-3 text-sm leading-relaxed", tier.featured ? "text-zinc-400" : "text-zinc-600")}>
+                <p className={cn("mt-3 text-sm leading-relaxed", tier.featured ? "text-stone-400" : "text-stone-600")}>
                   {tier.pitch}
                 </p>
 
@@ -49,7 +49,7 @@ export function Pricing() {
                         weight="bold"
                         className={cn("mt-0.5 shrink-0", tier.featured ? "text-emerald-400" : "text-emerald-700")}
                       />
-                      <span className={tier.featured ? "text-zinc-200" : "text-zinc-700"}>{feature}</span>
+                      <span className={tier.featured ? "text-stone-200" : "text-stone-700"}>{feature}</span>
                     </li>
                   ))}
                 </ul>
