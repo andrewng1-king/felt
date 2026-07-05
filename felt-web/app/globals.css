@@ -1,20 +1,36 @@
 @import "tailwindcss";
 
 /* felt. single locked light theme, warmed.
-   Warm paper base, warm ink text, one emerald accent. Serif display for the
-   human voice, Geist for UI. Neutrals run warm (stone), never cold (zinc). */
+   Warm paper base, warm ink text. Ink is the primary action; a single warm
+   orange carries every accent — the brand signal and the moment things shift.
+   Serif display for the human voice, Geist for UI. Neutrals run warm. */
 :root {
   color-scheme: light;
-  --background: #faf7f2;
-  --foreground: #1c1917;
-  --accent: #047857;
-  --accent-soft: #ecf5f0;
+  --background: #f7f4ee;
+  --bg-alt: #fbf9f3;
+  --foreground: #1a1712;
+  --ink-soft: #5a5347;
+  --line: #e3ded2;
+  --muted: #8b857a;
+  --accent: #b85c3a;
+  --accent-strong: #9a4733;
+  --accent-soft: #f0ddd0;
+  --highlight: #b85c3a;
+  --highlight-soft: #ecd8cd;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-bg-alt: var(--bg-alt);
   --color-foreground: var(--foreground);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-highlight: var(--highlight);
+  --color-highlight-soft: var(--highlight-soft);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-newsreader);

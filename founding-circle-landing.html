@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>felt. — The Founding Circle</title>
+<meta name="description" content="The feedback your people can't give you. Built for the ten conversations a year that decide if your best people stay." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F4EE;
+    --bg-alt: #FBF9F3;
+    --ink: #1A1712;
+    --ink-soft: #5A5347;
+    --line: #E3DED2;
+    --line-soft: #EAE5D8;
+    --muted: #8B857A;
+    --orange: #B85C3A;
+    --green: #5C8567;
+    --f-heading: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    --f-body: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); font-family: var(--f-body); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { font-size: 16px; line-height: 1.55; }
+  a { color: inherit; text-decoration: none; }
+  .wm { font-family: var(--f-heading); letter-spacing: -0.02em; font-weight: 500; }
+  .tag { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  .container { max-width: 720px; margin: 0 auto; padding: 0 28px; }
+
+  /* nav */
+  nav { padding: 32px 0 0; }
+  nav .row { display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark { display: block; }
+  .logo-word { font-family: var(--f-heading); font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+  .nav-right { font-size: 13px; color: var(--muted); letter-spacing: 0.02em; }
+
+  /* hero */
+  header.hero { padding: 96px 0 40px; }
+  .kicker { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+  h1 { font-family: var(--f-heading); font-weight: 500; font-size: clamp(36px, 5.4vw, 56px); line-height: 1.08; letter-spacing: -0.028em; color: var(--ink); max-width: 640px; }
+  h1 .accent { color: var(--ink); border-bottom: 2px solid var(--orange); padding-bottom: 2px; }
+  .sub { margin-top: 26px; font-size: 19px; line-height: 1.55; color: var(--ink-soft); max-width: 560px; font-weight: 400; }
+
+  /* shape */
+  .shape { margin: 48px 0 12px; padding: 0; }
+  .shape svg { width: 100%; height: 120px; display: block; }
+  .shape-caption { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); letter-spacing: 0.04em; margin-top: 8px; }
+
+  /* body */
+  section { padding: 64px 0; border-top: 0.5px solid var(--line); }
+  section.no-line { border-top: none; }
+  h2 { font-family: var(--f-heading); font-weight: 500; font-size: 28px; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 18px; max-width: 560px; }
+  p.lede { font-size: 17px; line-height: 1.6; color: var(--ink-soft); max-width: 560px; }
+  p + p { margin-top: 14px; }
+
+  /* what you get */
+  .rows { display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 32px; }
+  .row-item { display: grid; grid-template-columns: 32px 1fr; gap: 20px; padding: 22px 0; border-top: 0.5px solid var(--line); }
+  .row-item:first-child { border-top: 0.5px solid var(--line); }
+  .row-num { font-family: var(--f-heading); font-size: 13px; color: var(--muted); padding-top: 4px; }
+  .row-title { font-family: var(--f-heading); font-size: 17px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 4px; }
+  .row-body { font-size: 15px; color: var(--ink-soft); line-height: 1.55; }
+
+  /* terms card */
+  .terms { background: var(--bg-alt); border: 0.5px solid var(--line); border-radius: 12px; padding: 32px; margin-top: 36px; }
+  .terms .tag { margin-bottom: 16px; display: block; }
+  .terms h3 { font-family: var(--f-heading); font-size: 22px; font-weight: 500; letter-spacing: -0.01em; margin-bottom: 20px; }
+  .terms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; margin-top: 8px; }
+  .term-lbl { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .term-val { font-family: var(--f-heading); font-size: 16px; color: var(--ink); font-weight: 500; }
+  .term-note { font-size: 13px; color: var(--ink-soft); margin-top: 4px; line-height: 1.45; }
+
+  /* guarantee */
+  .guarantee { display: flex; gap: 16px; align-items: flex-start; padding: 22px 24px; background: transparent; border: 0.5px solid var(--line); border-radius: 10px; margin-top: 20px; }
+  .guarantee-mark { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--orange); display: flex; align-items: center; justify-content: center; color: var(--orange); font-family: var(--f-heading); font-weight: 500; font-size: 14px; }
+  .guarantee-text { font-size: 15px; color: var(--ink-soft); line-height: 1.55; }
+  .guarantee-text strong { color: var(--ink); font-weight: 500; font-family: var(--f-heading); }
+
+  /* apply */
+  .apply { padding: 72px 0 96px; border-top: 0.5px solid var(--line); }
+  .apply-inner { max-width: 560px; }
+  form { margin-top: 28px; display: grid; gap: 14px; }
+  label { display: block; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  input, textarea, select { width: 100%; padding: 14px 16px; background: var(--bg-alt); border: 0.5px solid var(--line); border-radius: 8px; font-family: var(--f-body); font-size: 15px; color: var(--ink); outline: none; transition: border-color 120ms ease; }
+  input:focus, textarea:focus, select:focus { border-color: var(--ink); }
+  textarea { min-height: 96px; resize: vertical; line-height: 1.5; }
+  button { margin-top: 8px; padding: 16px 22px; background: var(--ink); color: var(--bg); border: none; border-radius: 8px; font-family: var(--f-heading); font-size: 15px; font-weight: 500; letter-spacing: -0.005em; cursor: pointer; transition: opacity 120ms ease; }
+  button:hover { opacity: 0.9; }
+  .fine { margin-top: 14px; font-size: 12px; color: var(--muted); letter-spacing: 0.02em; }
+
+  /* footer */
+  footer { padding: 40px 0 60px; border-top: 0.5px solid var(--line); font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+  footer .row { display: flex; justify-content: space-between; align-items: center; }
+
+  /* testimonial slot */
+  .quote-block { margin-top: 40px; padding: 28px 0; border-top: 0.5px solid var(--line); border-bottom: 0.5px solid var(--line); }
+  blockquote { font-family: var(--f-heading); font-weight: 500; font-size: 22px; line-height: 1.35; letter-spacing: -0.015em; color: var(--ink); }
+  .cite { margin-top: 14px; font-size: 13px; color: var(--muted); letter-spacing: 0.04em; }
+
+  @media (max-width: 620px) {
+    header.hero { padding: 64px 0 24px; }
+    .terms-grid { grid-template-columns: 1fr; gap: 14px; }
+    section { padding: 48px 0; }
+    .apply { padding: 56px 0 72px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <nav>
+    <div class="row">
+      <div class="logo">
+        <svg class="logo-mark" width="34" height="18" viewBox="0 0 42 22" fill="none" aria-hidden="true">
+          <path d="M3 11 Q 9 4, 15 11" stroke="#1A1712" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+          <path d="M15 11 Q 21 18, 27 11" stroke="#1A1712" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.5"/>
+          <path d="M27 11 Q 33 4, 39 11" stroke="#1A1712" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.2"/>
+        </svg>
+        <span class="logo-word">felt.</span>
+      </div>
+      <div class="nav-right">Founding Circle · 10 seats</div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="kicker">By invitation and application</div>
+    <h1>The feedback your people <span class="accent">can't give you</span>.</h1>
+    <p class="sub">felt. is built for the ten conversations a year that decide whether your best people stay. Not every meeting. The ones that matter.</p>
+
+    <div class="shape" aria-hidden="true">
+      <svg viewBox="0 0 700 120" preserveAspectRatio="none">
+        <line x1="0" y1="60" x2="700" y2="60" stroke="#E3DED2" stroke-width="1"/>
+        <path d="M0 60 C 40 52, 70 74, 110 70 S 170 42, 210 46 S 280 82, 320 76 S 400 22, 440 20 S 520 34, 560 34 S 640 14, 700 18"
+              stroke="#1A1712" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <circle cx="440" cy="20" r="5" fill="#B85C3A"/>
+        <circle cx="440" cy="20" r="11" fill="none" stroke="#B85C3A" stroke-width="1" opacity="0.35"/>
+      </svg>
+      <div class="shape-caption">
+        <span>Start</span>
+        <span>The moment it shifted</span>
+        <span>End</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="no-line">
+    <h2>Your best people are forming opinions about you after every important conversation. You have no way to know what they are.</h2>
+    <p class="lede">HR tools measure the damage after they quit. Coaches cost hundreds a month and can't be in the room. Employees can't tell you what they really think, because they need their job. So the conversation ends, both of you guess, and slowly the trust erodes.</p>
+    <p class="lede">felt. reads the signals you couldn't see: voice, tone, language. It tells you what the other person felt, what they held back, and the moment it shifted. Before the conversation, it stress-tests how you plan to say it. After, it shows you what actually landed.</p>
+  </section>
+
+  <section>
+    <span class="tag">What the Founding Circle gets</span>
+    <div class="rows">
+      <div class="row-item">
+        <div class="row-num">01</div>
+        <div>
+          <div class="row-title">Personal onboarding with the founder</div>
+          <div class="row-body">A 30-minute session with me. Your first conversation, analyzed together. If the first insight isn't real, we stop there.</div>
+        </div>
+      </div>
+      <div class="row-item">
+        <div class="row-num">02</div>
+        <div>
+          <div class="row-title">Weekly private access</div>
+          <div class="row-body">A direct line to me for as long as you're a Founding member. Product requests get built or they don't. No committee.</div>
+        </div>
+      </div>
+      <div class="row-item">
+        <div class="row-num">03</div>
+        <div>
+          <div class="row-title">Lifetime price lock</div>
+          <div class="row-body">$75 a month for as long as felt. exists. Team pricing later will start higher.</div>
+        </div>
+      </div>
+      <div class="row-item">
+        <div class="row-num">04</div>
+        <div>
+          <div class="row-title">Named on the launch page</div>
+          <div class="row-body">If you want to be. Ten names, ten companies. That's it.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="terms">
+      <span class="tag">Founding Circle terms</span>
+      <h3>Ten seats. No renewals. No discounts.</h3>
+      <div class="terms-grid">
+        <div>
+          <div class="term-lbl">Price</div>
+          <div class="term-val">$75 / month</div>
+          <div class="term-note">Lifetime lock for Founding members.</div>
+        </div>
+        <div>
+          <div class="term-lbl">Who it's for</div>
+          <div class="term-val">Founders &amp; CEOs</div>
+          <div class="term-note">Teams of 20 – 100, English-first.</div>
+        </div>
+        <div>
+          <div class="term-lbl">Commitment</div>
+          <div class="term-val">Three months</div>
+          <div class="term-note">One important conversation a week, minimum.</div>
+        </div>
+        <div>
+          <div class="term-lbl">What I ask of you</div>
+          <div class="term-val">Feedback, honestly</div>
+          <div class="term-note">Monthly 20-minute call. That's it.</div>
+        </div>
+      </div>
+
+      <div class="guarantee">
+        <div class="guarantee-mark">✓</div>
+        <div class="guarantee-text"><strong>Insight guarantee.</strong> If your first session doesn't produce something you didn't already know about how you land in the room, I refund the month. You keep the analysis.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="quote-block">
+      <blockquote>"felt. said he'd probably open up if I gave him room. And he did. I've never had a tool tell me the truth like that."</blockquote>
+      <div class="cite">— Founding member · placeholder for real quote</div>
+    </div>
+  </section>
+
+  <section class="apply" id="apply">
+    <div class="apply-inner">
+      <span class="tag">Apply</span>
+      <h2 style="margin-top: 12px;">If a name comes to mind while reading this, apply.</h2>
+      <p class="lede">The person you thought of is why felt. exists.</p>
+
+      <form onsubmit="event.preventDefault(); document.getElementById('thanks').style.display='block'; this.style.display='none';">
+        <div>
+          <label for="name">Your name</label>
+          <input id="name" type="text" required placeholder="First and last" />
+        </div>
+        <div>
+          <label for="role">Role &amp; company</label>
+          <input id="role" type="text" required placeholder="CEO, Acme (24 people)" />
+        </div>
+        <div>
+          <label for="email">Work email</label>
+          <input id="email" type="email" required placeholder="you@company.com" />
+        </div>
+        <div>
+          <label for="story">One conversation you wish you'd handled differently.</label>
+          <textarea id="story" required placeholder="A few sentences is enough."></textarea>
+        </div>
+        <button type="submit">Apply for the Founding Circle</button>
+        <div class="fine">We review every application personally. If it's a fit, you'll hear back within 48 hours.</div>
+      </form>
+
+      <div id="thanks" style="display:none; margin-top: 8px; padding: 22px 24px; background: var(--bg-alt); border: 0.5px solid var(--line); border-radius: 10px;">
+        <div class="tag" style="margin-bottom: 8px;">Received</div>
+        <p style="font-family: var(--f-heading); font-size: 18px; color: var(--ink);">Thank you. I read every one of these myself. If it's a fit, you'll hear from me within 48 hours.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="row">
+      <div>felt. — the feedback your people can't give you.</div>
+      <div>© 2026</div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

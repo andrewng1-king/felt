@@ -24,11 +24,11 @@ export function Solution() {
             return (
               <Reveal key={phase.tag} delay={i * 0.1}>
                 <li className="relative flex gap-6 pb-12 last:pb-0">
-                  <span className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400 ring-4 ring-stone-950">
+                  <span className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent/20 text-accent ring-4 ring-stone-950">
                     <Icon size={20} weight="light" />
                   </span>
                   <div className="pt-1">
-                    <p className="text-xs font-medium uppercase tracking-[0.18em] text-emerald-400">
+                    <p className="text-xs font-medium uppercase tracking-[0.18em] text-accent">
                       {phase.tag}
                     </p>
                     <h3 className="font-display mt-2 text-xl tracking-tight text-white sm:text-2xl">

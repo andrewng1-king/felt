@@ -18,7 +18,7 @@ export function Problem() {
           {problem.points.map((point, i) => (
             <Reveal key={i} delay={i * 0.08}>
               <div className="flex gap-6 py-6">
-                <span className="font-mono text-sm text-emerald-700">0{i + 1}</span>
+                <span className="font-mono text-sm text-highlight">0{i + 1}</span>
                 <p className="max-w-2xl text-lg leading-relaxed text-stone-700">{point}</p>
               </div>
             </Reveal>

@@ -25,7 +25,7 @@ export function Waitlist() {
   }
 
   return (
-    <section id="waitlist" className="border-t border-stone-200/70 bg-emerald-50/60 px-6 py-24 lg:py-32">
+    <section id="waitlist" className="border-t border-stone-200/70 bg-accent/10 px-6 py-24 lg:py-32">
       <div className="mx-auto max-w-2xl text-center">
         <h2 className="font-display text-3xl leading-[1.15] tracking-tight text-stone-900 sm:text-4xl lg:text-[2.75rem]">
           {finalCta.heading}
@@ -35,7 +35,7 @@ export function Waitlist() {
         </p>
 
         {status === "success" ? (
-          <div className="mx-auto mt-10 flex items-center justify-center gap-2 text-emerald-800">
+          <div className="mx-auto mt-10 flex items-center justify-center gap-2 text-accent-strong">
             <CheckCircle size={22} weight="fill" />
             <p className="font-medium">You&apos;re on the list. We&apos;ll be in touch.</p>
           </div>
@@ -54,12 +54,12 @@ export function Waitlist() {
                   if (status === "error") setStatus("idle");
                 }}
                 placeholder="you@company.com"
-                className="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-stone-900 placeholder:text-stone-400 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/30"
+                className="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-stone-900 placeholder:text-stone-400 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
               />
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="shrink-0 rounded-full bg-emerald-700 px-6 py-3 text-sm font-medium text-white transition hover:bg-emerald-800 active:translate-y-px disabled:opacity-60"
+                className="shrink-0 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition hover:opacity-90 active:translate-y-px disabled:opacity-60"
               >
                 {status === "loading" ? "Joining..." : site.cta}
               </button>

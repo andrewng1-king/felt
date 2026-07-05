@@ -17,16 +17,16 @@ export function Metrics() {
         </Reveal>
 
         <div className="mt-14 grid gap-4 md:grid-cols-3">
-          {/* Featured: wide emerald tile */}
+          {/* Featured: wide accent tile */}
           <Reveal className="md:col-span-2">
-            <article className="flex h-full flex-col justify-between rounded-2xl bg-emerald-700 p-8 text-white">
-              <Heart size={28} weight="light" className="text-emerald-200" />
+            <article className="flex h-full flex-col justify-between rounded-2xl bg-accent-strong p-8 text-white">
+              <Heart size={28} weight="light" className="text-white/70" />
               <div className="mt-16">
-                <span className="text-xs font-medium uppercase tracking-[0.16em] text-emerald-200">
+                <span className="text-xs font-medium uppercase tracking-[0.16em] text-white/70">
                   {featured.phase}
                 </span>
                 <h3 className="font-display mt-2 text-2xl tracking-tight">{featured.name}</h3>
-                <p className="mt-3 max-w-md leading-relaxed text-emerald-50/90">{featured.body}</p>
+                <p className="mt-3 max-w-md leading-relaxed text-white/85">{featured.body}</p>
               </div>
             </article>
           </Reveal>
@@ -34,7 +34,7 @@ export function Metrics() {
           {/* Second: tinted tile */}
           <Reveal delay={0.08}>
             <article className="flex h-full flex-col justify-between rounded-2xl bg-stone-100 p-8">
-              <Waveform size={28} weight="light" className="text-emerald-700" />
+              <Waveform size={28} weight="light" className="text-accent-strong" />
               <div className="mt-16">
                 <span className="text-xs font-medium uppercase tracking-[0.16em] text-stone-500">
                   {second.phase}
@@ -51,7 +51,7 @@ export function Metrics() {
           <Reveal delay={0.12} className="md:col-span-3">
             <article className="flex flex-col gap-4 rounded-2xl border border-stone-200 p-8 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
-                <WarningDiamond size={28} weight="light" className="text-emerald-700" />
+                <WarningDiamond size={28} weight="light" className="text-highlight" />
                 <div>
                   <span className="text-xs font-medium uppercase tracking-[0.16em] text-stone-500">
                     {third.phase}

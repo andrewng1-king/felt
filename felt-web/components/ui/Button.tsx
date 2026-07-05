@@ -7,8 +7,8 @@ const base =
   "inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition active:translate-y-px whitespace-nowrap";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-emerald-700 text-white hover:bg-emerald-800",
-  ghost: "border border-stone-300 text-stone-900 hover:bg-stone-900/5",
+  primary: "bg-foreground text-background hover:opacity-90",
+  ghost: "border border-line text-foreground hover:bg-foreground/5",
 };
 
 type Props = {

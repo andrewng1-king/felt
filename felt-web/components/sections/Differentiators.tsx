@@ -17,7 +17,7 @@ export function Differentiators() {
           {differentiators.points.map((point, i) => (
             <Reveal key={i} delay={i * 0.08}>
               <div className="flex gap-4 rounded-2xl bg-stone-100 p-7">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-white">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-strong text-white">
                   <Check size={14} weight="bold" />
                 </span>
                 <p className="text-lg leading-relaxed text-stone-700">{point}</p>

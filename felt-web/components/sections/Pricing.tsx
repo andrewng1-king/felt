@@ -1,70 +1,42 @@
-import { Check } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
-import { pricing, site } from "@/content/site";
-import { cn } from "@/lib/utils";
+import { pilot } from "@/content/site";
 
 export function Pricing() {
   return (
     <section id="pricing" className="border-t border-stone-200/70 px-6 py-24 lg:py-32">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-3xl">
+        {/* Primary CTA: the Proof of Signal pilot */}
         <Reveal>
-          <h2 className="font-display max-w-2xl text-3xl leading-[1.15] tracking-tight text-stone-900 sm:text-4xl">
-            {pricing.heading}
-          </h2>
+          <div className="rounded-3xl border border-line bg-bg-alt p-8 shadow-[0_30px_70px_-40px_rgba(26,23,18,0.34)] sm:p-12">
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-accent-strong">
+              {pilot.eyebrow}
+            </p>
+            <h2 className="font-display mt-4 text-3xl leading-[1.1] tracking-tight text-foreground sm:text-[2.75rem]">
+              {pilot.heading}
+            </h2>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft">{pilot.subhead}</p>
+            <p className="mt-4 max-w-xl leading-relaxed text-ink-soft">{pilot.detail}</p>
+
+            <div className="mt-9">
+              <Button href="#waitlist" className="gap-2 px-7 py-3.5 text-base">
+                {pilot.cta}
+                <ArrowRight size={18} weight="bold" />
+              </Button>
+            </div>
+          </div>
         </Reveal>
 
-        <div className="mt-14 grid items-start gap-6 md:grid-cols-3">
-          {pricing.tiers.map((tier, i) => (
-            <Reveal key={tier.name} delay={i * 0.08}>
-              <article
-                className={cn(
-                  "flex h-full flex-col rounded-2xl p-8",
-                  tier.featured
-                    ? "bg-stone-950 text-white ring-1 ring-stone-950"
-                    : "border border-stone-200 bg-white text-stone-900",
-                )}
-              >
-                {tier.featured && (
-                  <span className="mb-4 inline-flex w-fit rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-medium uppercase tracking-[0.14em] text-emerald-400">
-                    Most popular
-                  </span>
-                )}
-                <h3 className="text-lg font-semibold tracking-tight">{tier.name}</h3>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-semibold tracking-tight">{tier.price}</span>
-                  <span className={cn("text-sm", tier.featured ? "text-stone-400" : "text-stone-500")}>
-                    {tier.cadence}
-                  </span>
-                </div>
-                <p className={cn("mt-3 text-sm leading-relaxed", tier.featured ? "text-stone-400" : "text-stone-600")}>
-                  {tier.pitch}
-                </p>
-
-                <ul className="mt-8 flex flex-col gap-3">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3 text-sm">
-                      <Check
-                        size={16}
-                        weight="bold"
-                        className={cn("mt-0.5 shrink-0", tier.featured ? "text-emerald-400" : "text-emerald-700")}
-                      />
-                      <span className={tier.featured ? "text-stone-200" : "text-stone-700"}>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button
-                  href="#waitlist"
-                  variant={tier.featured ? "primary" : "ghost"}
-                  className="mt-8 w-full"
-                >
-                  {site.cta}
-                </Button>
-              </article>
-            </Reveal>
-          ))}
-        </div>
+        {/* Secondary, lighter: what happens after the pilot */}
+        <Reveal delay={0.08}>
+          <div className="mx-auto mt-10 max-w-xl px-2 text-center">
+            <h3 className="text-sm font-medium uppercase tracking-[0.14em] text-muted">
+              {pilot.after.heading}
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-muted">{pilot.after.body}</p>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

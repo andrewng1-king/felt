@@ -9,7 +9,7 @@ export function Quote() {
           &ldquo;{quote.body}&rdquo;
         </blockquote>
         <div className="mt-8 flex items-center gap-4">
-          <span className="h-px w-10 bg-emerald-700" aria-hidden />
+          <span className="h-px w-10 bg-highlight" aria-hidden />
           <div className="text-sm">
             <span className="font-medium text-stone-900">{quote.name}</span>
             <span className="text-stone-500">, {quote.role}</span>
