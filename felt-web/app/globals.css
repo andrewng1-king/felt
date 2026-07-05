@@ -17,6 +17,11 @@
   --accent-soft: #f0ddd0;
   --highlight: #b85c3a;
   --highlight-soft: #ecd8cd;
+  /* Warm tinted card surface — sits a touch deeper than the paper bg so a card
+     reads as a surface, not a hole. Replaces the cool Tailwind stone-100. */
+  --surface: #ede7d9;
+  /* Warm near-black for inverted sections. Replaces the cool stone-950. */
+  --ink-deep: #16130e;
 }
 
 @theme inline {
@@ -31,6 +36,8 @@
   --color-accent-soft: var(--accent-soft);
   --color-highlight: var(--highlight);
   --color-highlight-soft: var(--highlight-soft);
+  --color-surface: var(--surface);
+  --color-ink-deep: var(--ink-deep);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-newsreader);

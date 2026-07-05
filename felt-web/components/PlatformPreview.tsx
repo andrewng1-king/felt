@@ -44,7 +44,7 @@ export function PlatformPreview() {
             <span className="font-display text-sm leading-none tracking-tight text-foreground">felt.</span>
           </span>
         </div>
-        <span className="rounded-full bg-stone-100 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+        <span className="rounded-full bg-surface px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
           Example
         </span>
       </div>

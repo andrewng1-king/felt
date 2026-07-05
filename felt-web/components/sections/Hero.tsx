@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { ScrollZoom } from "@/components/ui/ScrollZoom";
+import { Underline } from "@/components/ui/Underline";
 import { PlatformPreview } from "@/components/PlatformPreview";
 import { hero, site } from "@/content/site";
 
@@ -13,12 +14,10 @@ export function Hero() {
         </p>
         <h1 className="font-display mt-6 text-[2.6rem] leading-[1.06] tracking-tight text-foreground sm:text-5xl lg:text-[3.75rem]">
           The feedback your people{" "}
-          <em className="font-display italic text-highlight [border-bottom:2px_solid_var(--highlight)]">
-            can&rsquo;t
-          </em>{" "}
+          <Underline>can&rsquo;t</Underline>{" "}
           give you.
         </h1>
-        <p className="mt-6 max-w-md text-lg leading-relaxed text-stone-600">
+        <p className="mt-6 max-w-md text-lg leading-relaxed text-ink-soft">
           {hero.subtext}
         </p>
         <div className="mt-9 flex flex-wrap items-center gap-3">

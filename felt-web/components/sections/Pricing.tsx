@@ -5,11 +5,11 @@ import { pilot } from "@/content/site";
 
 export function Pricing() {
   return (
-    <section id="pricing" className="border-t border-stone-200/70 px-6 py-24 lg:py-32">
+    <section id="pricing" className="border-t border-line px-6 py-24 lg:py-32">
       <div className="mx-auto max-w-3xl">
         {/* Primary CTA: the Proof of Signal pilot */}
         <Reveal>
-          <div className="rounded-3xl border border-line bg-bg-alt p-8 shadow-[0_30px_70px_-40px_rgba(26,23,18,0.34)] sm:p-12">
+          <div className="rounded-3xl border border-line bg-bg-alt p-8 shadow-[0_30px_70px_-40px_rgba(26,23,18,0.34)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_40px_80px_-40px_rgba(26,23,18,0.4)] sm:p-12">
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-accent-strong">
               {pilot.eyebrow}
             </p>
@@ -22,7 +22,11 @@ export function Pricing() {
             <div className="mt-9">
               <Button href="#waitlist" className="gap-2 px-7 py-3.5 text-base">
                 {pilot.cta}
-                <ArrowRight size={18} weight="bold" />
+                <ArrowRight
+                  size={18}
+                  weight="bold"
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
               </Button>
             </div>
           </div>

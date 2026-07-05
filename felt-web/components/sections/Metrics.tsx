@@ -8,10 +8,10 @@ export function Metrics() {
   const [featured, second, third] = metrics.items;
 
   return (
-    <section className="border-t border-stone-200/70 px-6 py-24 lg:py-32">
+    <section className="border-t border-line px-6 py-24 lg:py-32">
       <div className="mx-auto max-w-6xl">
         <Reveal>
-          <h2 className="font-display max-w-2xl text-3xl leading-[1.15] tracking-tight text-stone-900 sm:text-4xl">
+          <h2 className="font-display max-w-2xl text-3xl leading-[1.15] tracking-tight text-foreground sm:text-4xl">
             {metrics.heading}
           </h2>
         </Reveal>
@@ -19,7 +19,7 @@ export function Metrics() {
         <div className="mt-14 grid gap-4 md:grid-cols-3">
           {/* Featured: wide accent tile */}
           <Reveal className="md:col-span-2">
-            <article className="flex h-full flex-col justify-between rounded-2xl bg-accent-strong p-8 text-white">
+            <article className="flex h-full flex-col justify-between rounded-2xl bg-accent-strong p-8 text-white transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_50px_-28px_rgba(154,71,51,0.7)]">
               <Heart size={28} weight="light" className="text-white/70" />
               <div className="mt-16">
                 <span className="text-xs font-medium uppercase tracking-[0.16em] text-white/70">
@@ -33,35 +33,35 @@ export function Metrics() {
 
           {/* Second: tinted tile */}
           <Reveal delay={0.08}>
-            <article className="flex h-full flex-col justify-between rounded-2xl bg-stone-100 p-8">
+            <article className="flex h-full flex-col justify-between rounded-2xl bg-surface p-8 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_44px_-28px_rgba(26,23,18,0.4)]">
               <Waveform size={28} weight="light" className="text-accent-strong" />
               <div className="mt-16">
-                <span className="text-xs font-medium uppercase tracking-[0.16em] text-stone-500">
+                <span className="text-xs font-medium uppercase tracking-[0.16em] text-muted">
                   {second.phase}
                 </span>
-                <h3 className="font-display mt-2 text-xl tracking-tight text-stone-900">
+                <h3 className="font-display mt-2 text-xl tracking-tight text-foreground">
                   {second.name}
                 </h3>
-                <p className="mt-3 leading-relaxed text-stone-600">{second.body}</p>
+                <p className="mt-3 leading-relaxed text-ink-soft">{second.body}</p>
               </div>
             </article>
           </Reveal>
 
           {/* Third: full-width bordered tile */}
           <Reveal delay={0.12} className="md:col-span-3">
-            <article className="flex flex-col gap-4 rounded-2xl border border-stone-200 p-8 sm:flex-row sm:items-center sm:justify-between">
+            <article className="flex flex-col gap-4 rounded-2xl border border-line p-8 transition duration-300 hover:-translate-y-1 hover:border-accent-soft hover:shadow-[0_24px_44px_-28px_rgba(26,23,18,0.4)] sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
                 <WarningDiamond size={28} weight="light" className="text-highlight" />
                 <div>
-                  <span className="text-xs font-medium uppercase tracking-[0.16em] text-stone-500">
+                  <span className="text-xs font-medium uppercase tracking-[0.16em] text-muted">
                     {third.phase}
                   </span>
-                  <h3 className="font-display mt-1 text-xl tracking-tight text-stone-900">
+                  <h3 className="font-display mt-1 text-xl tracking-tight text-foreground">
                     {third.name}
                   </h3>
                 </div>
               </div>
-              <p className="max-w-md leading-relaxed text-stone-600">{third.body}</p>
+              <p className="max-w-md leading-relaxed text-ink-soft">{third.body}</p>
             </article>
           </Reveal>
         </div>
