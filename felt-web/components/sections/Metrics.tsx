@@ -33,7 +33,7 @@ export function Metrics() {
 
           {/* Second: tinted tile */}
           <Reveal delay={0.08}>
-            <article className="flex h-full flex-col justify-between rounded-2xl bg-surface p-8 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_44px_-28px_rgba(26,23,18,0.4)]">
+            <article className="glass flex h-full flex-col justify-between rounded-2xl p-8 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_44px_-28px_rgba(26,23,18,0.4)]">
               <Waveform size={28} weight="light" className="text-accent-strong" />
               <div className="mt-16">
                 <span className="text-xs font-medium uppercase tracking-[0.16em] text-muted">
@@ -49,7 +49,7 @@ export function Metrics() {
 
           {/* Third: full-width bordered tile */}
           <Reveal delay={0.12} className="md:col-span-3">
-            <article className="flex flex-col gap-4 rounded-2xl border border-line p-8 transition duration-300 hover:-translate-y-1 hover:border-accent-soft hover:shadow-[0_24px_44px_-28px_rgba(26,23,18,0.4)] sm:flex-row sm:items-center sm:justify-between">
+            <article className="glass flex flex-col gap-4 rounded-2xl p-8 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_44px_-28px_rgba(26,23,18,0.4)] sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
                 <WarningDiamond size={28} weight="light" className="text-highlight" />
                 <div>

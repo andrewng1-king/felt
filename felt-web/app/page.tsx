@@ -1,6 +1,7 @@
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/sections/Hero";
+import { PlatformShowcase } from "@/components/sections/PlatformShowcase";
 import { Problem } from "@/components/sections/Problem";
 import { Solution } from "@/components/sections/Solution";
 import { Metrics } from "@/components/sections/Metrics";
@@ -15,6 +16,7 @@ export default function Home() {
       <Nav />
       <main className="flex-1">
         <Hero />
+        <PlatformShowcase />
         <Problem />
         <Solution />
         <Metrics />
