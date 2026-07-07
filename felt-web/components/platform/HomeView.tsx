@@ -1,13 +1,7 @@
-import { ArrowRight, ArrowUpRight, Trophy, WarningDiamond } from "@phosphor-icons/react/dist/ssr";
-import { Avatar, DirectionBadge, Sparkline } from "@/components/platform/bits";
-import {
-  andrew,
-  conversations,
-  reports,
-  homeSignals,
-  riskView,
-  reportTrends,
-} from "@/content/platform";
+import { ArrowRight, WarningDiamond, CalendarBlank, Clock } from "@phosphor-icons/react/dist/ssr";
+import { Avatar, DirectionBadge } from "@/components/platform/bits";
+import { StatTile, SectionHeader, WeekBars } from "@/components/platform/ui";
+import { andrew, activity, conversations, reports, riskView } from "@/content/platform";
 
 export function HomeView({
   onOpenConvo,
@@ -16,103 +10,134 @@ export function HomeView({
   onOpenConvo: (id: string) => void;
   onOpenRisk: () => void;
 }) {
-  const recent = [...conversations].reverse().slice(0, 4);
+  const recent = [...conversations].reverse().slice(0, 5);
+  const overdue = activity.roster.filter((r) => r.overdue);
+  const { kpis } = activity;
 
   return (
-    <div className="mx-auto max-w-4xl px-5 py-8 sm:px-8 sm:py-10">
-      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
-        Good afternoon, {andrew.name}
-      </p>
+    <div className="mx-auto max-w-6xl px-5 py-7 sm:px-8 sm:py-8">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-sm text-ink-soft">
+          Good afternoon, <span className="font-medium text-foreground">{andrew.name}</span>
+        </p>
+        <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
+          {activity.rangeLabel}
+        </span>
+      </div>
 
-      {/* YOUR OWN signal leads the screen (guidebook §5) */}
-      <section className="felt-hero mt-5 rounded-3xl p-7 text-white sm:p-9">
-        <div className="flex items-start justify-between gap-4">
-          <div className="max-w-lg">
-            <h1 className="font-display text-2xl leading-snug tracking-tight sm:text-[28px]">
-              {homeSignals.trend.headline}
-            </h1>
-            <p className="mt-3 leading-relaxed text-white/70">{homeSignals.trend.sub}</p>
-          </div>
-          <span className="hidden shrink-0 sm:block">
-            <Sparkline points={[0.5, 0.55, 0.62, 0.6, 0.68]} direction="up" />
-          </span>
+      {/* KPI row — the glance layer: how much am I doing, how's the cadence */}
+      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatTile label="Sessions" value={kpis.sessions} hint="1:1s logged this month" />
+        <StatTile label="Time in 1:1s" value={kpis.minutes} unit="min" hint="≈ 2h 28m total" />
+        <StatTile
+          label="People covered"
+          value={`${kpis.peopleCovered}/${kpis.peopleTotal}`}
+          hint="met in the last 2 weeks"
+        />
+        <StatTile label="Cadence" value={kpis.cadenceDays} unit="days" hint="avg between 1:1s" />
+      </div>
+
+      {/* Main + side rail */}
+      <div className="mt-6 grid gap-5 lg:grid-cols-3">
+        <div className="space-y-5 lg:col-span-2">
+          {/* Cadence */}
+          <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+            <SectionHeader
+              title="Your cadence"
+              action={
+                <span className="inline-flex items-center gap-1.5 text-xs text-ink-soft">
+                  <CalendarBlank size={14} className="text-muted" /> 1:1s per week
+                </span>
+              }
+            />
+            <p className="mt-1 text-sm text-ink-soft">
+              You&apos;ve kept a steady rhythm — {kpis.sessions} conversations over the last eight weeks.
+            </p>
+            <div className="mt-6">
+              <WeekBars data={activity.weekly} />
+            </div>
+          </section>
+
+          {/* Recent conversations */}
+          <section className="rounded-2xl border border-line bg-surface">
+            <div className="px-5 pt-5 sm:px-6">
+              <SectionHeader title="Recent conversations" />
+            </div>
+            <div className="mt-3 divide-y divide-line">
+              {recent.map((c) => {
+                const r = reports[c.reportId];
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => onOpenConvo(c.id)}
+                    className="group flex w-full items-center gap-3 px-5 py-3.5 text-left outline-none transition hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50 sm:px-6"
+                  >
+                    <Avatar initials={r.initials} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-foreground">{r.name}</span>
+                        <span className="text-[11px] tabular-nums text-muted">
+                          S{c.session} · {c.whenLabel}
+                        </span>
+                      </div>
+                      <p className="mt-0.5 truncate text-sm text-ink-soft">{c.headline}</p>
+                    </div>
+                    <DirectionBadge direction={c.direction} label={c.directionLabel} subtle />
+                    <ArrowRight
+                      size={15}
+                      className="hidden shrink-0 text-muted transition group-hover:translate-x-0.5 group-hover:text-foreground sm:block"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </section>
         </div>
 
-        <div className="mt-7 flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-medium">
-            <Trophy size={14} weight="fill" className="text-white/80" />
-            {homeSignals.streak.count} {homeSignals.streak.label} · {homeSignals.streak.with}
-          </span>
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white/80">
-            <ArrowUpRight size={14} weight="bold" />
-            Trending up overall
-          </span>
-        </div>
-      </section>
+        {/* Side rail — needs attention */}
+        <div className="space-y-5">
+          {/* Risk nudge */}
+          <button
+            type="button"
+            onClick={onOpenRisk}
+            className="group flex w-full flex-col rounded-2xl border border-accent/40 bg-accent-soft p-5 text-left outline-none transition hover:border-accent/70 focus-visible:ring-2 focus-visible:ring-accent/50"
+          >
+            <div className="flex items-center gap-2">
+              <WarningDiamond size={16} weight="fill" className="text-accent" />
+              <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-accent">
+                Risk signal · {riskView.alert.level}
+              </span>
+            </div>
+            <p className="mt-2.5 text-sm leading-relaxed text-foreground">{riskView.alert.summary}</p>
+            <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-accent">
+              Open Risk &amp; Trends
+              <ArrowRight size={13} className="transition group-hover:translate-x-0.5" />
+            </span>
+          </button>
 
-      {/* This session's win — the retention lever */}
-      <button
-        type="button"
-        onClick={() => onOpenConvo(homeSignals.latestWin.convoId)}
-        className="group mt-4 flex w-full items-start gap-3 rounded-2xl border border-line bg-bg-alt/70 p-5 text-left outline-none transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-28px_rgba(26,23,18,0.4)] focus-visible:ring-2 focus-visible:ring-accent/50"
-      >
-        <Trophy size={18} weight="fill" className="mt-0.5 shrink-0 text-accent-strong" aria-hidden />
-        <div className="min-w-0 flex-1">
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
-            Your win this session
-          </p>
-          <p className="mt-1.5 leading-relaxed text-foreground">{homeSignals.latestWin.text}</p>
-        </div>
-        <ArrowRight size={16} className="mt-1 shrink-0 text-muted transition group-hover:translate-x-0.5 group-hover:text-foreground" />
-      </button>
-
-      {/* Risk banner — one relationship needs attention */}
-      <button
-        type="button"
-        onClick={onOpenRisk}
-        className="group mt-4 flex w-full items-start gap-3 rounded-2xl border border-cool/30 bg-cool/10 p-5 text-left outline-none transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-28px_rgba(6,148,148,0.45)] focus-visible:ring-2 focus-visible:ring-cool/50"
-      >
-        <WarningDiamond size={18} weight="fill" className="mt-0.5 shrink-0 text-cool" aria-hidden />
-        <div className="min-w-0 flex-1">
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-cool">
-            Risk signal · {riskView.alert.level}
-          </p>
-          <p className="mt-1.5 leading-relaxed text-foreground">{riskView.alert.summary}</p>
-        </div>
-        <div className="mt-0.5 hidden shrink-0 sm:block">
-          <Sparkline points={reportTrends[riskView.alert.reportId].points} direction="down" />
-        </div>
-      </button>
-
-      {/* Recent conversations */}
-      <section className="mt-10">
-        <h2 className="font-display text-lg tracking-tight text-foreground">Recent conversations</h2>
-        <div className="mt-4 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-bg-alt/50">
-          {recent.map((c) => {
-            const r = reports[c.reportId];
-            return (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => onOpenConvo(c.id)}
-                className="group flex w-full items-center gap-3 px-5 py-4 text-left outline-none transition hover:bg-surface/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50"
-              >
-                <Avatar initials={r.initials} />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-foreground">{r.name}</span>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-                      · S{c.session} · {c.whenLabel}
-                    </span>
+          {/* Overdue 1:1s */}
+          <section className="rounded-2xl border border-line bg-surface p-5">
+            <SectionHeader title="Overdue 1:1s" />
+            <p className="mt-1 text-xs text-ink-soft">Haven&apos;t met in over two weeks.</p>
+            <div className="mt-4 space-y-3">
+              {overdue.map((r) => (
+                <div key={r.id} className="flex items-center gap-3">
+                  <Avatar initials={r.initials} size="sm" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-foreground">{r.name}</p>
+                    <p className="truncate text-[11px] text-muted">{r.role}</p>
                   </div>
-                  <p className="mt-0.5 truncate text-sm text-ink-soft">{c.headline}</p>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-medium tabular-nums text-accent">
+                    <Clock size={12} weight="fill" />
+                    {r.daysSince}d
+                  </span>
                 </div>
-                <DirectionBadge direction={c.direction} label={c.directionLabel} subtle />
-              </button>
-            );
-          })}
+              ))}
+            </div>
+          </section>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

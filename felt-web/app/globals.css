@@ -2,9 +2,10 @@
 
 /* felt. — two scoped themes off one token set.
    Marketing/site: the original warm light theme (paper base, warm ink).
-   Live demo (/app): [data-theme="night"] flips the same tokens to a warm-dark
-   "night" palette and swaps the type system. Ink orange stays the brand/warm
-   signal; a single teal carries risk/cooling. Nothing renders cold. */
+   Live demo (/app): [data-theme="night"] is a FLAT near-black SaaS surface —
+   no glass, no glow, no grain. One warm-orange accent carries brand + attention;
+   everything else is neutral. Elevation comes from surface lightness + hairline
+   borders only. One legible type family (Switzer) across the whole app. */
 :root {
   color-scheme: light;
   --background: #f7f4ee;
@@ -18,13 +19,7 @@
   --accent-soft: #f0ddd0;
   --highlight: #b85c3a;
   --highlight-soft: #ecd8cd;
-  /* Second signal — cool/risk/cooling. The chromatic opposite of the orange.
-     Thin marks use it at full strength; large fills use it at low alpha. */
-  --cool: #069494;
-  /* Warm tinted card surface — sits a touch deeper than the paper bg so a card
-     reads as a surface, not a hole. Replaces the cool Tailwind stone-100. */
   --surface: #ede7d9;
-  /* Warm near-black for inverted sections. Replaces the cool stone-950. */
   --ink-deep: #16130e;
 
   /* Type is indirected through --app-* so a scoped theme can swap the whole
@@ -34,45 +29,46 @@
   --app-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-/* felt. night — the live demo (/app). Warm inversion: dim, warm, human 1:1.
-   Applied on the demo shell wrapper so the marketing site stays light. */
+/* felt. app — the live demo (/app). Flat near-black, single warm-orange accent. */
 [data-theme="night"] {
   color-scheme: dark;
-  --background: #16130e;
-  --bg-alt: #1e1a13;
-  --foreground: #f2ede3;
-  --ink-soft: #b7af9f;
-  --line: #332c22;
-  --muted: #8a8171;
-  --accent: #cf6f47;
-  --accent-strong: #e28a5f;
-  --accent-soft: #2b1c13;
-  --highlight: #cf6f47;
-  --highlight-soft: #2b1c13;
-  --cool: #2bb8b2;
-  --surface: #241d15;
-  --ink-deep: #201a12;
+  --background: #0a0a0b; /* near-black base */
+  --bg-alt: #0f0f11;     /* inset rows / subtle wells */
+  --surface: #141416;    /* raised cards */
+  --surface-2: #1b1b1e;  /* hover / nested surface */
+  --foreground: #f4f4f5;
+  --ink-soft: #b4b4bb;   /* secondary text (>=4.5:1 on base) */
+  --muted: #8a8a93;      /* tertiary / labels */
+  --line: #242629;       /* hairline borders */
+  --line-strong: #303034;
+  --accent: #e8703a;         /* the one color: brand, interactive, attention */
+  --accent-strong: #f2814d;  /* hover / brighter */
+  --accent-soft: #2a1710;    /* opaque dark-orange tint for selected/alert wells */
+  --highlight: #e8703a;
+  --highlight-soft: #2a1710;
+  --ink-deep: #1b1b1e;   /* emphasis card base (flat, no glow) */
 
-  /* Night type system: editorial serif + Switzer (UI) + Space Mono (data). */
+  /* One legible family for the whole app — no serif display, no mono labels. */
   --app-sans: var(--font-switzer), system-ui, sans-serif;
-  --app-serif: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
-  --app-mono: var(--font-space-mono), ui-monospace, monospace;
+  --app-serif: var(--font-switzer), system-ui, sans-serif;
+  --app-mono: var(--font-switzer), ui-monospace, monospace;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-bg-alt: var(--bg-alt);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-foreground: var(--foreground);
   --color-ink-soft: var(--ink-soft);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
   --color-accent-soft: var(--accent-soft);
   --color-highlight: var(--highlight);
   --color-highlight-soft: var(--highlight-soft);
-  --color-cool: var(--cool);
-  --color-surface: var(--surface);
   --color-ink-deep: var(--ink-deep);
   --font-sans: var(--app-sans);
   --font-mono: var(--app-mono);
@@ -86,7 +82,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Serif display for emotional headlines and the wordmark. */
+/* Serif display for emotional headlines and the wordmark (marketing only; in the
+   flat app this resolves to Switzer via --app-serif). */
 .font-display {
   font-family: var(--app-serif);
   font-weight: 400;
@@ -98,8 +95,7 @@ body {
   filter: grayscale(1) contrast(1.05) brightness(0.98);
 }
 
-/* Warm frosted glass card. Translucent paper over a blur, a bright top edge and
-   a soft warm shadow — reads as glass on the light theme without going cold. */
+/* Warm frosted glass card — MARKETING / light theme only. */
 .glass {
   background: color-mix(in srgb, var(--bg-alt) 60%, transparent);
   backdrop-filter: blur(16px) saturate(1.15);
@@ -110,47 +106,37 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
-/* Glass on night: translucent warm-dark surface, a faint top highlight and a
-   deeper shadow so it still reads as a raised pane of glass on the dark field. */
+/* In the flat app, ".glass" degrades to a plain bordered surface — no blur,
+   no shadow — so existing cards keep working without the glass look. */
 [data-theme="night"] .glass {
-  background: color-mix(in srgb, var(--surface) 55%, transparent);
-  border: 1px solid color-mix(in srgb, white 8%, var(--line));
-  box-shadow:
-    0 24px 60px -34px rgba(0, 0, 0, 0.8),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: var(--surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--line);
+  box-shadow: none;
 }
 
-/* Elevated "signal" panel (the home trend hero, the blind-spot card). On light
-   it's a dark ink block on paper; on night that contrast vanishes, so it becomes
-   a raised warm charcoal with a soft orange edge-glow to keep it the loud one. */
+/* Emphasis card. Light: dark ink block on paper. Flat app: a slightly lighter
+   flat surface with a hairline — elevation by value, not glow. */
 .felt-hero {
   background: var(--ink-deep);
   color: #fff;
 }
 [data-theme="night"] .felt-hero {
-  background: linear-gradient(155deg, #2c2418 0%, #201a12 100%);
-  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 30px 60px -42px rgba(0, 0, 0, 0.85),
-    0 0 46px -22px color-mix(in srgb, var(--accent) 45%, transparent);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  box-shadow: none;
 }
 
-/* Accessibility: when the OS asks for less transparency, drop the blur and use
-   a solid warm surface so text stays legible. */
 @media (prefers-reduced-transparency: reduce) {
   .glass {
     background: var(--bg-alt);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
-  [data-theme="night"] .glass {
-    background: var(--surface);
-  }
 }
 
-/* Very fine paper grain over the whole page. Fixed + pointer-events-none so it
-   never triggers repaints on scroll. Kept faint so it reads as texture, not noise. */
+/* Fine paper grain — MARKETING / light theme only. The flat app has no grain. */
 body::before {
   content: "";
   position: fixed;
@@ -161,23 +147,8 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* On night the dark grain disappears into the dark bg — lighten it with a
-   screen blend so it reads as a faint luminous grain instead. Painted from the
-   demo wrapper so it only affects /app. */
-[data-theme="night"]::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  pointer-events: none;
-  opacity: 0.05;
-  mix-blend-mode: screen;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
 @media (prefers-reduced-transparency: reduce) {
-  body::before,
-  [data-theme="night"]::before {
+  body::before {
     display: none;
   }
 }

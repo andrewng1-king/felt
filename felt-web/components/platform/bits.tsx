@@ -4,11 +4,12 @@ import { ArrowUpRight, ArrowDownRight, ArrowRight } from "@phosphor-icons/react/
 import { motion, useReducedMotion } from "motion/react";
 import type { Direction, Tone } from "@/content/platform";
 
-// Dual accent: warm = the brand orange, cool = the teal risk signal, mixed = muted.
+// Single-accent system: orange = the one that needs attention (cool/concern),
+// bright = good (warm), muted = neutral (mixed). Color only where it means something.
 export const toneDot: Record<Tone, string> = {
-  warm: "bg-accent",
+  warm: "bg-foreground",
   mixed: "bg-muted",
-  cool: "bg-cool",
+  cool: "bg-accent",
 };
 
 export function Avatar({
@@ -47,7 +48,7 @@ export function DirectionBadge({
 }) {
   const Icon = direction === "down" ? ArrowDownRight : direction === "up" ? ArrowUpRight : ArrowRight;
   const color =
-    direction === "down" ? "text-cool" : direction === "up" ? "text-foreground" : "text-muted";
+    direction === "down" ? "text-accent" : direction === "up" ? "text-foreground" : "text-muted";
   return (
     <span
       className={[
@@ -71,7 +72,7 @@ export function Sparkline({ points, direction }: { points: number[]; direction: 
   const H = 26;
   const pad = 3;
   const n = points.length;
-  const stroke = direction === "down" ? "var(--cool)" : "var(--foreground)";
+  const stroke = direction === "down" ? "var(--accent)" : "var(--foreground)";
   const coords = points.map((v, i) => {
     const x = pad + (i / (n - 1)) * (W - pad * 2);
     const y = H - pad - v * (H - pad * 2);

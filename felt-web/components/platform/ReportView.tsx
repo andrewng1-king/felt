@@ -1,5 +1,4 @@
 import {
-  ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   LockSimple,
@@ -29,10 +28,10 @@ function MetricCard({
   return (
     <article
       className={[
-        "flex h-full flex-col rounded-2xl border p-5 transition duration-300",
+        "flex h-full flex-col rounded-xl border p-4 transition",
         metric.locked
           ? "border-dashed border-line bg-transparent"
-          : "border-line bg-bg-alt/70 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-28px_rgba(26,23,18,0.4)]",
+          : "border-line bg-surface hover:border-line-strong",
       ].join(" ")}
     >
       <div className="flex items-center justify-between gap-3">
@@ -42,9 +41,9 @@ function MetricCard({
           ) : (
             <span className={`h-2 w-2 rounded-full ${toneDot[metric.tone]}`} aria-hidden />
           )}
-          <h4 className="font-display text-[17px] tracking-tight text-foreground">{name}</h4>
+          <h4 className="text-sm font-semibold tracking-tight text-foreground">{name}</h4>
         </div>
-        <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
+        <span className="shrink-0 text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
           {phase}
         </span>
       </div>
@@ -67,33 +66,17 @@ function MetricCard({
   );
 }
 
-export function ReportView({
-  convo,
-  onBack,
-}: {
-  convo: Conversation;
-  onBack: () => void;
-}) {
+export function ReportView({ convo }: { convo: Conversation }) {
   const report = reports[convo.reportId];
 
   return (
-    <div className="mx-auto max-w-4xl px-5 py-8 sm:px-8 sm:py-10">
-      <button
-        type="button"
-        onClick={onBack}
-        className="inline-flex items-center gap-1.5 rounded text-sm text-muted outline-none transition hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent/50"
-      >
-        <ArrowLeft size={15} weight="bold" /> Conversations
-      </button>
-
+    <div className="mx-auto max-w-5xl px-5 py-7 sm:px-8 sm:py-8">
       {/* Conversation header */}
-      <div className="mt-6 flex items-center gap-3">
+      <div className="flex items-center gap-3">
         <Avatar initials={report.initials} size="lg" />
         <div>
-          <h1 className="font-display text-2xl tracking-tight text-foreground sm:text-3xl">
-            1:1 with {report.name}
-          </h1>
-          <p className="mt-0.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+          <p className="text-base font-semibold tracking-tight text-foreground">{report.role}</p>
+          <p className="mt-0.5 text-[11px] tabular-nums text-muted">
             Session {convo.session} · {convo.dateLabel} · {convo.duration} · voice + transcript
           </p>
         </div>
@@ -101,7 +84,7 @@ export function ReportView({
 
       {/* The Read */}
       <div className="mt-8">
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">The Read</span>
+        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted">The Read</span>
         <p className="font-display mt-4 text-xl leading-[1.55] tracking-tight text-foreground sm:text-[23px] sm:leading-[1.55]">
           {convo.read.segments.map((s, i) =>
             s.em ? (
@@ -135,11 +118,11 @@ export function ReportView({
 
       {/* Empathy Mirror — the evidence, one section down */}
       <section className="mt-12 border-t border-line pt-10">
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">The evidence</span>
-        <h2 className="font-display mt-3 text-xl tracking-tight text-foreground">
+        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted">The evidence</span>
+        <h2 className="mt-3 text-lg font-semibold tracking-tight text-foreground">
           How {convo.reportId === "priya" ? "she" : "he"} moved, second by second.
         </h2>
-        <div className="glass mt-6 rounded-3xl p-5 sm:p-8">
+        <div className="glass mt-6 rounded-2xl p-5 sm:p-8">
           {/* key forces a fresh chart when switching conversations */}
           <EmpathyMirror key={convo.id} data={convo.mirror} />
         </div>
@@ -147,18 +130,18 @@ export function ReportView({
 
       {/* The 11 signals underneath */}
       <section className="mt-12 border-t border-line pt-10">
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">The why</span>
-        <h2 className="font-display mt-3 text-xl tracking-tight text-foreground">
+        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted">The why</span>
+        <h2 className="mt-3 text-lg font-semibold tracking-tight text-foreground">
           The 11 signals underneath — lenses, not grades.
         </h2>
         <div className="mt-8 space-y-10">
           {pillarSkeleton.map((pillar) => (
             <div key={pillar.n}>
               <div className="flex items-baseline gap-3">
-                <span className="font-mono text-xs tabular-nums text-muted">
+                <span className="text-xs font-medium tabular-nums text-accent">
                   {String(pillar.n).padStart(2, "0")}
                 </span>
-                <h3 className="font-display text-lg tracking-tight text-foreground">{pillar.name}</h3>
+                <h3 className="text-base font-semibold tracking-tight text-foreground">{pillar.name}</h3>
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {pillar.metrics.map((m) => (

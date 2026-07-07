@@ -6,13 +6,12 @@ const order = ["daniel", "priya"] as const;
 
 export function ConversationsView({ onOpenConvo }: { onOpenConvo: (id: string) => void }) {
   return (
-    <div className="mx-auto max-w-4xl px-5 py-8 sm:px-8 sm:py-10">
-      <h1 className="font-display text-2xl tracking-tight text-foreground sm:text-3xl">Conversations</h1>
-      <p className="mt-2 text-sm text-ink-soft">
+    <div className="mx-auto max-w-5xl px-5 py-7 sm:px-8 sm:py-8">
+      <p className="text-sm text-ink-soft">
         Every 1:1 felt. has read for you, newest first, grouped by person.
       </p>
 
-      <div className="mt-8 space-y-10">
+      <div className="mt-6 space-y-8">
         {order.map((rid) => {
           const r = reports[rid];
           const trend = reportTrends[rid];
@@ -23,34 +22,34 @@ export function ConversationsView({ onOpenConvo }: { onOpenConvo: (id: string) =
                 <div className="flex items-center gap-3">
                   <Avatar initials={r.initials} size="lg" />
                   <div>
-                    <h2 className="font-display text-xl tracking-tight text-foreground">{r.name}</h2>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+                    <h2 className="text-base font-semibold tracking-tight text-foreground">{r.name}</h2>
+                    <p className="text-[11px] text-muted">
                       {r.role} · {r.relationship}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="hidden font-mono text-[10px] uppercase tracking-[0.12em] text-muted sm:inline">
+                  <span className="hidden text-[11px] tabular-nums text-muted sm:inline">
                     {list.length} sessions
                   </span>
                   <Sparkline points={trend.points} direction={trend.dir} />
                 </div>
               </div>
 
-              <div className="mt-4 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-bg-alt/50">
+              <div className="mt-4 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface">
                 {list.map((c) => (
                   <button
                     key={c.id}
                     type="button"
                     onClick={() => onOpenConvo(c.id)}
-                    className="group flex w-full items-center gap-4 px-5 py-4 text-left outline-none transition hover:bg-surface/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50"
+                    className="group flex w-full items-center gap-4 px-5 py-3.5 text-left outline-none transition hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50"
                   >
-                    <span className="w-14 shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+                    <span className="w-12 shrink-0 text-[11px] font-medium tabular-nums text-muted">
                       S{c.session}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-foreground">{c.headline}</p>
-                      <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+                      <p className="truncate text-sm text-foreground">{c.headline}</p>
+                      <p className="mt-0.5 text-[11px] tabular-nums text-muted">
                         {c.dateLabel} · {c.duration}
                       </p>
                     </div>

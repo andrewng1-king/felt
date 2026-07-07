@@ -420,6 +420,58 @@ export const homeSignals = {
   },
 };
 
+/**
+ * Home = ACTIVITY dashboard. "How much am I doing, how's the cadence" — not
+ * scores. Daniel & Priya have deep felt. history; the rest of the roster is
+ * lightweight (last-met + cadence) so coverage/overdue reads like a real team.
+ * Numbers are hand-authored to be internally consistent with the 7 conversations
+ * above, as of the demo "today" (Jul 7).
+ */
+export type RosterEntry = {
+  id: string;
+  name: string;
+  initials: string;
+  role: string;
+  /** Human label + raw days since the last 1:1. */
+  lastMetLabel: string;
+  daysSince: number;
+  sessions: number;
+  /** Set when this person has full felt. history (opens a report). */
+  reportId?: "daniel" | "priya";
+  trend: Direction;
+  overdue?: boolean;
+};
+
+export const activity = {
+  rangeLabel: "Last 30 days",
+  kpis: {
+    sessions: 9,
+    minutes: 148, // 2h 28m across the team this month
+    peopleCovered: 4,
+    peopleTotal: 6,
+    cadenceDays: 8, // avg days between 1:1s
+  },
+  /** 1:1s per week across the team, oldest → newest. Last entry = this week. */
+  weekly: [
+    { week: "May 19", count: 1 },
+    { week: "May 26", count: 2 },
+    { week: "Jun 2", count: 2 },
+    { week: "Jun 9", count: 1 },
+    { week: "Jun 16", count: 2 },
+    { week: "Jun 23", count: 1 },
+    { week: "Jun 30", count: 3 },
+    { week: "This week", count: 2 },
+  ],
+  roster: [
+    { id: "priya", name: "Priya S.", initials: "PS", role: "Product Lead", lastMetLabel: "3 days ago", daysSince: 3, sessions: 3, reportId: "priya", trend: "up" },
+    { id: "daniel", name: "Daniel K.", initials: "DK", role: "Senior Engineer", lastMetLabel: "4 days ago", daysSince: 4, sessions: 4, reportId: "daniel", trend: "down" },
+    { id: "elena", name: "Elena R.", initials: "ER", role: "Staff Engineer", lastMetLabel: "6 days ago", daysSince: 6, sessions: 2, trend: "steady" },
+    { id: "marcus", name: "Marcus T.", initials: "MT", role: "Design Lead", lastMetLabel: "a week ago", daysSince: 7, sessions: 2, trend: "steady" },
+    { id: "nadia", name: "Nadia H.", initials: "NH", role: "Data Lead", lastMetLabel: "17 days ago", daysSince: 17, sessions: 1, trend: "steady", overdue: true },
+    { id: "sam", name: "Sam O.", initials: "SO", role: "Eng Manager", lastMetLabel: "25 days ago", daysSince: 25, sessions: 1, trend: "steady", overdue: true },
+  ] as RosterEntry[],
+};
+
 /** Risk & Trends view content. */
 export const riskView = {
   alert: {

@@ -28,28 +28,7 @@ const newsreader = localFont({
   ],
 });
 
-// --- felt. night (/app) type system: editorial serif + Switzer UI + Space Mono ---
-// Instrument Serif is the big-statement editorial display face.
-const instrumentSerif = localFont({
-  variable: "--font-instrument-serif",
-  display: "swap",
-  src: [
-    { path: "./fonts/instrument/instrument-400-normal.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/instrument/instrument-400-italic.woff2", weight: "400", style: "italic" },
-  ],
-});
-
-// Space Mono carries the data labels — distinctive, editorial, not JetBrains.
-const spaceMono = localFont({
-  variable: "--font-space-mono",
-  display: "swap",
-  src: [
-    { path: "./fonts/space-mono/space-mono-400-normal.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/space-mono/space-mono-700-normal.woff2", weight: "700", style: "normal" },
-  ],
-});
-
-// Switzer (Fontshare) — a clean neo-grotesque for dense UI.
+// Switzer (Fontshare) — the single legible workhorse for the whole flat app.
 const switzer = localFont({
   variable: "--font-switzer",
   display: "swap",
@@ -75,7 +54,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} ${switzer.variable} ${instrumentSerif.variable} ${spaceMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} ${switzer.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
