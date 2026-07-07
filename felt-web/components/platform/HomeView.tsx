@@ -25,7 +25,7 @@ export function HomeView({
       </p>
 
       {/* YOUR OWN signal leads the screen (guidebook §5) */}
-      <section className="mt-5 rounded-3xl bg-ink-deep p-7 text-white sm:p-9">
+      <section className="felt-hero mt-5 rounded-3xl p-7 text-white sm:p-9">
         <div className="flex items-start justify-between gap-4">
           <div className="max-w-lg">
             <h1 className="font-display text-2xl leading-snug tracking-tight sm:text-[28px]">
@@ -70,11 +70,11 @@ export function HomeView({
       <button
         type="button"
         onClick={onOpenRisk}
-        className="group mt-4 flex w-full items-start gap-3 rounded-2xl border border-accent-strong/25 bg-accent-soft/50 p-5 text-left outline-none transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-28px_rgba(154,71,51,0.5)] focus-visible:ring-2 focus-visible:ring-accent/50"
+        className="group mt-4 flex w-full items-start gap-3 rounded-2xl border border-cool/30 bg-cool/10 p-5 text-left outline-none transition hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-28px_rgba(6,148,148,0.45)] focus-visible:ring-2 focus-visible:ring-cool/50"
       >
-        <WarningDiamond size={18} weight="fill" className="mt-0.5 shrink-0 text-accent-strong" aria-hidden />
+        <WarningDiamond size={18} weight="fill" className="mt-0.5 shrink-0 text-cool" aria-hidden />
         <div className="min-w-0 flex-1">
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-accent-strong">
+          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-cool">
             Risk signal · {riskView.alert.level}
           </p>
           <p className="mt-1.5 leading-relaxed text-foreground">{riskView.alert.summary}</p>

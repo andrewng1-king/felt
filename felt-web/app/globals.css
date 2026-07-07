@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
-/* felt. single locked light theme, warmed.
-   Warm paper base, warm ink text. Ink is the primary action; a single warm
-   orange carries every accent — the brand signal and the moment things shift.
-   Serif display for the human voice, Geist for UI. Neutrals run warm. */
+/* felt. — two scoped themes off one token set.
+   Marketing/site: the original warm light theme (paper base, warm ink).
+   Live demo (/app): [data-theme="night"] flips the same tokens to a warm-dark
+   "night" palette and swaps the type system. Ink orange stays the brand/warm
+   signal; a single teal carries risk/cooling. Nothing renders cold. */
 :root {
   color-scheme: light;
   --background: #f7f4ee;
@@ -17,11 +18,45 @@
   --accent-soft: #f0ddd0;
   --highlight: #b85c3a;
   --highlight-soft: #ecd8cd;
+  /* Second signal — cool/risk/cooling. The chromatic opposite of the orange.
+     Thin marks use it at full strength; large fills use it at low alpha. */
+  --cool: #069494;
   /* Warm tinted card surface — sits a touch deeper than the paper bg so a card
      reads as a surface, not a hole. Replaces the cool Tailwind stone-100. */
   --surface: #ede7d9;
   /* Warm near-black for inverted sections. Replaces the cool stone-950. */
   --ink-deep: #16130e;
+
+  /* Type is indirected through --app-* so a scoped theme can swap the whole
+     stack without touching component classes. Site default = Geist/Newsreader. */
+  --app-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --app-serif: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --app-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* felt. night — the live demo (/app). Warm inversion: dim, warm, human 1:1.
+   Applied on the demo shell wrapper so the marketing site stays light. */
+[data-theme="night"] {
+  color-scheme: dark;
+  --background: #16130e;
+  --bg-alt: #1e1a13;
+  --foreground: #f2ede3;
+  --ink-soft: #b7af9f;
+  --line: #332c22;
+  --muted: #8a8171;
+  --accent: #cf6f47;
+  --accent-strong: #e28a5f;
+  --accent-soft: #2b1c13;
+  --highlight: #cf6f47;
+  --highlight-soft: #2b1c13;
+  --cool: #2bb8b2;
+  --surface: #241d15;
+  --ink-deep: #201a12;
+
+  /* Night type system: editorial serif + Switzer (UI) + Space Mono (data). */
+  --app-sans: var(--font-switzer), system-ui, sans-serif;
+  --app-serif: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
+  --app-mono: var(--font-space-mono), ui-monospace, monospace;
 }
 
 @theme inline {
@@ -36,23 +71,24 @@
   --color-accent-soft: var(--accent-soft);
   --color-highlight: var(--highlight);
   --color-highlight-soft: var(--highlight-soft);
+  --color-cool: var(--cool);
   --color-surface: var(--surface);
   --color-ink-deep: var(--ink-deep);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-newsreader);
+  --font-sans: var(--app-sans);
+  --font-mono: var(--app-mono);
+  --font-serif: var(--app-serif);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--app-sans);
   -webkit-font-smoothing: antialiased;
 }
 
 /* Serif display for emotional headlines and the wordmark. */
 .font-display {
-  font-family: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  font-family: var(--app-serif);
   font-weight: 400;
   letter-spacing: -0.01em;
 }
@@ -74,6 +110,32 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
+/* Glass on night: translucent warm-dark surface, a faint top highlight and a
+   deeper shadow so it still reads as a raised pane of glass on the dark field. */
+[data-theme="night"] .glass {
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  border: 1px solid color-mix(in srgb, white 8%, var(--line));
+  box-shadow:
+    0 24px 60px -34px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Elevated "signal" panel (the home trend hero, the blind-spot card). On light
+   it's a dark ink block on paper; on night that contrast vanishes, so it becomes
+   a raised warm charcoal with a soft orange edge-glow to keep it the loud one. */
+.felt-hero {
+  background: var(--ink-deep);
+  color: #fff;
+}
+[data-theme="night"] .felt-hero {
+  background: linear-gradient(155deg, #2c2418 0%, #201a12 100%);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 30px 60px -42px rgba(0, 0, 0, 0.85),
+    0 0 46px -22px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
 /* Accessibility: when the OS asks for less transparency, drop the blur and use
    a solid warm surface so text stays legible. */
 @media (prefers-reduced-transparency: reduce) {
@@ -81,6 +143,9 @@ body {
     background: var(--bg-alt);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+  [data-theme="night"] .glass {
+    background: var(--surface);
   }
 }
 
@@ -96,8 +161,23 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* On night the dark grain disappears into the dark bg — lighten it with a
+   screen blend so it reads as a faint luminous grain instead. Painted from the
+   demo wrapper so it only affects /app. */
+[data-theme="night"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 @media (prefers-reduced-transparency: reduce) {
-  body::before {
+  body::before,
+  [data-theme="night"]::before {
     display: none;
   }
 }

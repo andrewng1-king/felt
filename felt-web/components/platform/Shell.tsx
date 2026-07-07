@@ -43,7 +43,7 @@ export function Shell() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
+    <div data-theme="night" className="flex min-h-screen flex-col bg-background text-foreground md:flex-row">
       {/* Sidebar (desktop) / top bar (mobile) */}
       <aside className="sticky top-0 z-40 flex shrink-0 items-center justify-between border-b border-line bg-background/85 px-4 py-3 backdrop-blur md:h-screen md:w-60 md:flex-col md:items-stretch md:justify-start md:border-b-0 md:border-r md:px-4 md:py-6">
         <div className="md:px-2">{logo}</div>

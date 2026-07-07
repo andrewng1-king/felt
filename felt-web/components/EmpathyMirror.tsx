@@ -46,8 +46,11 @@ const X1 = 440;
 const Y_OPEN = 40; // top = open
 const Y_GUARD = 220; // bottom = guarded
 
-const INK = "#1a1712";
-const ORANGE = "#b85c3a";
+// Theme-aware: these follow the CSS palette, so the chart flips with the theme
+// (bone line + orange voice on night, ink line + orange on the light site).
+const INK = "var(--foreground)";
+const ORANGE = "var(--accent)";
+const PAPER = "var(--bg-alt)";
 
 const fx = (t: number) => X0 + t * (X1 - X0);
 const fy = (v: number) => Y_GUARD - v * (Y_GUARD - Y_OPEN);
@@ -279,8 +282,8 @@ export function EmpathyMirror({ data = empathyMirror as MirrorData }: { data?: M
                   cx={cx}
                   cy={cy}
                   r={on ? 5.5 : 4}
-                  fill={on ? ORANGE : "#fbf9f3"}
-                  stroke={on ? "#fbf9f3" : INK}
+                  fill={on ? ORANGE : PAPER}
+                  stroke={on ? PAPER : INK}
                   strokeWidth={on ? 2.5 : 1.75}
                 />
               </g>
@@ -292,7 +295,7 @@ export function EmpathyMirror({ data = empathyMirror as MirrorData }: { data?: M
             cx={px}
             cy={py}
             r="5"
-            fill="#fbf9f3"
+            fill={PAPER}
             stroke={INK}
             strokeWidth="2.5"
             style={{ pointerEvents: "none" }}

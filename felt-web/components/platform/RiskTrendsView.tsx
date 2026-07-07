@@ -24,14 +24,14 @@ export function RiskTrendsView({ onOpenConvo }: { onOpenConvo: (id: string) => v
       </p>
 
       {/* The alert */}
-      <section className="mt-8 rounded-3xl border border-accent-strong/25 bg-accent-soft/40 p-6 sm:p-8">
+      <section className="mt-8 rounded-3xl border border-cool/30 bg-cool/10 p-6 sm:p-8">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             <Avatar initials={alertReport.initials} size="lg" />
             <div>
               <div className="flex items-center gap-2">
-                <WarningDiamond size={16} weight="fill" className="text-accent-strong" />
-                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-accent-strong">
+                <WarningDiamond size={16} weight="fill" className="text-cool" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-cool">
                   Risk signal · {riskView.alert.level}
                 </span>
               </div>
@@ -50,9 +50,9 @@ export function RiskTrendsView({ onOpenConvo }: { onOpenConvo: (id: string) => v
             <div key={f.label} className="rounded-2xl border border-line bg-background/60 p-4">
               <div className="flex items-center gap-2">
                 {f.dir === "down" ? (
-                  <ArrowDownRight size={14} weight="bold" className="text-accent-strong" />
+                  <ArrowDownRight size={14} weight="bold" className="text-cool" />
                 ) : (
-                  <ArrowUpRight size={14} weight="bold" className="text-accent-strong" />
+                  <ArrowUpRight size={14} weight="bold" className="text-cool" />
                 )}
                 <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
                   {f.label}
@@ -63,8 +63,8 @@ export function RiskTrendsView({ onOpenConvo }: { onOpenConvo: (id: string) => v
           ))}
         </div>
 
-        <div className="mt-6 flex flex-col gap-4 border-t border-accent-strong/15 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="flex items-start gap-2 text-sm leading-relaxed text-accent-strong">
+        <div className="mt-6 flex flex-col gap-4 border-t border-cool/20 pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex items-start gap-2 text-sm leading-relaxed text-cool">
             <ArrowRight size={15} weight="bold" className="mt-0.5 shrink-0" />
             <span>
               <span className="font-medium">Next conversation:</span> {riskView.alert.nextStep}
@@ -98,7 +98,7 @@ export function RiskTrendsView({ onOpenConvo }: { onOpenConvo: (id: string) => v
       </section>
 
       {/* Andrew's own blind spot */}
-      <section className="mt-8 rounded-3xl bg-ink-deep p-6 text-white sm:p-8">
+      <section className="felt-hero mt-8 rounded-3xl p-6 text-white sm:p-8">
         <div className="flex items-center gap-2">
           <Eye size={16} weight="fill" className="text-white/70" />
           <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/60">
