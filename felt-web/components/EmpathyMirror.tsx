@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
@@ -9,7 +9,27 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
-import { empathyMirror as data } from "@/content/site";
+import { empathyMirror } from "@/content/site";
+
+/** Shape of one conversation's Empathy Mirror read. Matches `empathyMirror`. */
+export type MirrorData = {
+  label: string;
+  signals: {
+    openness: { name: string; points: readonly (readonly [number, number])[] };
+    voice: { name: string; points: readonly (readonly [number, number])[] };
+  };
+  moments: readonly {
+    t: number;
+    value: number;
+    at: string;
+    label: string;
+    signal: string;
+    said: string;
+    felt: string;
+    shift?: boolean;
+  }[];
+  read: string;
+};
 
 /**
  * The interactive core of the platform preview: a real (illustrative) read of a
@@ -31,7 +51,7 @@ const ORANGE = "#b85c3a";
 
 const fx = (t: number) => X0 + t * (X1 - X0);
 const fy = (v: number) => Y_GUARD - v * (Y_GUARD - Y_OPEN);
-const toXY = ([t, v]: [number, number]): [number, number] => [fx(t), fy(v)];
+const toXY = ([t, v]: readonly [number, number]): [number, number] => [fx(t), fy(v)];
 
 /** Catmull-Rom → cubic bezier for a smooth curve through the given points. */
 function smoothPath(pts: [number, number][]): string {
@@ -67,19 +87,21 @@ function yAtX(path: SVGPathElement, x: number): number {
 /** felt score (0-100) from a plotted y: top = open = 100, bottom = guarded = 0. */
 const feltFromY = (y: number) => ((Y_GUARD - y) / (Y_GUARD - Y_OPEN)) * 100;
 
-const opennessPts = data.signals.openness.points.map(toXY);
-const voicePts = data.signals.voice.points.map(toXY);
-const opennessLine = smoothPath(opennessPts);
-const opennessArea = `${opennessLine} L ${X1} ${Y_GUARD} L ${X0} ${Y_GUARD} Z`;
-const voiceLine = smoothPath(voicePts);
-
-const defaultMoment = Math.max(
-  0,
-  data.moments.findIndex((m) => "shift" in m && m.shift),
-);
-
-export function EmpathyMirror() {
+export function EmpathyMirror({ data = empathyMirror as MirrorData }: { data?: MirrorData } = {}) {
   const reduce = useReducedMotion();
+
+  const { opennessLine, opennessArea, voiceLine, defaultMoment } = useMemo(() => {
+    const oPts = data.signals.openness.points.map(toXY);
+    const vPts = data.signals.voice.points.map(toXY);
+    const oLine = smoothPath(oPts);
+    return {
+      opennessLine: oLine,
+      opennessArea: `${oLine} L ${X1} ${Y_GUARD} L ${X0} ${Y_GUARD} Z`,
+      voiceLine: smoothPath(vPts),
+      defaultMoment: Math.max(0, data.moments.findIndex((m) => m.shift)),
+    };
+  }, [data]);
+
   const [active, setActive] = useState(defaultMoment);
   const moment = data.moments[active];
   const mx = fx(moment.t);
