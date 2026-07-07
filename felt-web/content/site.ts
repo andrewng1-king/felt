@@ -6,6 +6,7 @@ export const site = {
   nav: [
     { label: "The problem", href: "#problem" },
     { label: "How it works", href: "#how" },
+    { label: "Live demo", href: "/demo" },
     { label: "Pricing", href: "#pricing" },
   ],
   cta: "Join the waitlist",
