@@ -1,69 +1,203 @@
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
-import { Avatar, DirectionBadge, Sparkline } from "@/components/platform/bits";
-import { conversations, reports, reportTrends } from "@/content/platform";
+"use client";
 
-const order = ["daniel", "priya"] as const;
+import { useMemo, useState } from "react";
+import { MagnifyingGlass, Funnel, ChatCircle } from "@phosphor-icons/react/dist/ssr";
+import { Avatar, Sparkline } from "@/components/platform/bits";
+import { ReportView } from "@/components/platform/ReportView";
+import {
+  activity,
+  conversations,
+  reportTrends,
+  type RosterEntry,
+} from "@/content/platform";
+
+type Sort = "attention" | "recent" | "name";
+
+const isAttention = (p: RosterEntry) => p.overdue || p.trend === "down";
+
+function statusOf(p: RosterEntry) {
+  if (p.trend === "down") return { label: "Risk", cls: "text-accent", dot: "bg-accent" };
+  if (p.overdue) return { label: "Overdue", cls: "text-accent", dot: "bg-accent" };
+  if (p.trend === "up") return { label: "On track", cls: "text-foreground", dot: "bg-foreground" };
+  return { label: "Active", cls: "text-muted", dot: "bg-muted/70" };
+}
+
+const convosFor = (reportId?: string) =>
+  reportId ? conversations.filter((c) => c.reportId === reportId) : [];
 
 export function ConversationsView({ onOpenConvo }: { onOpenConvo: (id: string) => void }) {
+  const roster = activity.roster;
+  const [selectedId, setSelectedId] = useState(roster[0].id);
+  const [convoId, setConvoId] = useState<string | null>(() => {
+    const cvs = convosFor(roster[0].reportId);
+    return cvs.length ? cvs[cvs.length - 1].id : null;
+  });
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<Sort>("attention");
+  const [needsOnly, setNeedsOnly] = useState(false);
+
+  const selected = roster.find((p) => p.id === selectedId)!;
+  const personConvos = convosFor(selected.reportId);
+  const convo = personConvos.find((c) => c.id === convoId) ?? null;
+
+  const list = useMemo(() => {
+    let r = roster.filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase()));
+    if (needsOnly) r = r.filter(isAttention);
+    return [...r].sort((a, b) => {
+      if (sort === "name") return a.name.localeCompare(b.name);
+      if (sort === "recent") return a.daysSince - b.daysSince;
+      // attention: flagged first, then longest since last 1:1
+      const fa = isAttention(a) ? 0 : 1;
+      const fb = isAttention(b) ? 0 : 1;
+      return fa - fb || b.daysSince - a.daysSince;
+    });
+  }, [roster, query, needsOnly, sort]);
+
+  function selectPerson(p: RosterEntry) {
+    setSelectedId(p.id);
+    const cvs = convosFor(p.reportId);
+    setConvoId(cvs.length ? cvs[cvs.length - 1].id : null);
+  }
+
   return (
-    <div className="mx-auto max-w-5xl px-5 py-7 sm:px-8 sm:py-8">
-      <p className="text-sm text-ink-soft">
-        Every 1:1 felt. has read for you, newest first, grouped by person.
-      </p>
+    <div className="mx-auto max-w-6xl px-5 py-6 sm:px-8">
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm text-muted sm:max-w-xs">
+          <MagnifyingGlass size={15} />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search people…"
+            className="min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted focus:outline-none"
+          />
+        </label>
+        <button
+          type="button"
+          onClick={() => setNeedsOnly((v) => !v)}
+          className={[
+            "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-accent/50",
+            needsOnly
+              ? "border-accent/50 bg-accent-soft text-accent"
+              : "border-line bg-surface text-ink-soft hover:text-foreground",
+          ].join(" ")}
+        >
+          <Funnel size={14} weight={needsOnly ? "fill" : "regular"} /> Needs attention
+        </button>
+        <div className="flex items-center overflow-hidden rounded-lg border border-line bg-surface text-sm">
+          {(["attention", "recent", "name"] as Sort[]).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setSort(s)}
+              className={[
+                "px-3 py-1.5 capitalize outline-none transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50",
+                sort === s ? "bg-surface-2 font-medium text-foreground" : "text-muted hover:text-foreground",
+              ].join(" ")}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
 
-      <div className="mt-6 space-y-8">
-        {order.map((rid) => {
-          const r = reports[rid];
-          const trend = reportTrends[rid];
-          const list = conversations.filter((c) => c.reportId === rid).reverse();
-          return (
-            <section key={rid}>
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <Avatar initials={r.initials} size="lg" />
-                  <div>
-                    <h2 className="text-base font-semibold tracking-tight text-foreground">{r.name}</h2>
-                    <p className="text-[11px] text-muted">
-                      {r.role} · {r.relationship}
-                    </p>
-                  </div>
+      <div className="mt-4 grid gap-5 lg:grid-cols-[300px_1fr]">
+        {/* Master: people list */}
+        <aside className="space-y-1">
+          {list.map((p) => {
+            const on = p.id === selectedId;
+            const st = statusOf(p);
+            const trend = reportTrends[p.id as "daniel" | "priya"];
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => selectPerson(p)}
+                aria-current={on ? "true" : undefined}
+                className={[
+                  "group relative flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left outline-none transition focus-visible:ring-2 focus-visible:ring-accent/50",
+                  on
+                    ? "border-line-strong bg-surface-2"
+                    : "border-transparent hover:border-line hover:bg-surface",
+                ].join(" ")}
+              >
+                {on && <span className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full bg-accent" aria-hidden />}
+                <Avatar initials={p.initials} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-foreground">{p.name}</p>
+                  <p className="truncate text-[11px] text-muted">
+                    <span className={`mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle ${st.dot}`} />
+                    {st.label} · {p.lastMetLabel}
+                  </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="hidden text-[11px] tabular-nums text-muted sm:inline">
-                    {list.length} sessions
-                  </span>
+                {trend ? (
                   <Sparkline points={trend.points} direction={trend.dir} />
-                </div>
-              </div>
+                ) : (
+                  <span className="text-[11px] tabular-nums text-muted">{p.sessions}×</span>
+                )}
+              </button>
+            );
+          })}
+          {list.length === 0 && (
+            <p className="rounded-xl border border-line bg-surface px-4 py-6 text-center text-sm text-muted">
+              No one matches.
+            </p>
+          )}
+        </aside>
 
-              <div className="mt-4 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface">
-                {list.map((c) => (
+        {/* Detail: selected person */}
+        <section className="min-w-0 rounded-2xl border border-line bg-surface">
+          {/* Person header + session switcher */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-3.5 sm:px-6">
+            <div className="flex items-center gap-2.5">
+              <Avatar initials={selected.initials} />
+              <div>
+                <p className="text-sm font-semibold text-foreground">{selected.name}</p>
+                <p className="text-[11px] tabular-nums text-muted">
+                  {selected.role}
+                  {convo && ` · S${convo.session} · ${convo.dateLabel} · ${convo.duration}`}
+                </p>
+              </div>
+            </div>
+            {personConvos.length > 0 && (
+              <div className="flex items-center gap-1">
+                <span className="mr-1 text-[11px] uppercase tracking-[0.1em] text-muted">Sessions</span>
+                {personConvos.map((c) => (
                   <button
                     key={c.id}
                     type="button"
-                    onClick={() => onOpenConvo(c.id)}
-                    className="group flex w-full items-center gap-4 px-5 py-3.5 text-left outline-none transition hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50"
+                    onClick={() => setConvoId(c.id)}
+                    className={[
+                      "rounded-md px-2 py-1 text-xs font-medium tabular-nums outline-none transition focus-visible:ring-2 focus-visible:ring-accent/50",
+                      convoId === c.id ? "bg-accent text-[color:var(--on-accent)]" : "bg-surface-2 text-ink-soft hover:text-foreground",
+                    ].join(" ")}
                   >
-                    <span className="w-12 shrink-0 text-[11px] font-medium tabular-nums text-muted">
-                      S{c.session}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm text-foreground">{c.headline}</p>
-                      <p className="mt-0.5 text-[11px] tabular-nums text-muted">
-                        {c.dateLabel} · {c.duration}
-                      </p>
-                    </div>
-                    <DirectionBadge direction={c.direction} label={c.directionLabel} subtle />
-                    <ArrowRight
-                      size={16}
-                      className="hidden shrink-0 text-muted transition group-hover:translate-x-0.5 group-hover:text-foreground sm:block"
-                    />
+                    S{c.session}
                   </button>
                 ))}
+                <button
+                  type="button"
+                  onClick={() => convo && onOpenConvo(convo.id)}
+                  className="ml-1 rounded-md px-2 py-1 text-xs text-muted outline-none transition hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent/50"
+                >
+                  Full view
+                </button>
               </div>
-            </section>
-          );
-        })}
+            )}
+          </div>
+
+          {convo ? (
+            <ReportView key={convo.id} convo={convo} embedded />
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-2 px-6 py-20 text-center">
+              <ChatCircle size={30} className="text-muted" />
+              <p className="text-sm font-medium text-foreground">No analyzed 1:1s yet for {selected.name}</p>
+              <p className="max-w-xs text-sm text-ink-soft">
+                Last met {selected.lastMetLabel}. Record your next 1:1 and felt. will read it here.
+              </p>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );

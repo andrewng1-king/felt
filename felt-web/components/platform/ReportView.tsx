@@ -66,24 +66,26 @@ function MetricCard({
   );
 }
 
-export function ReportView({ convo }: { convo: Conversation }) {
+export function ReportView({ convo, embedded = false }: { convo: Conversation; embedded?: boolean }) {
   const report = reports[convo.reportId];
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-7 sm:px-8 sm:py-8">
-      {/* Conversation header */}
-      <div className="flex items-center gap-3">
-        <Avatar initials={report.initials} size="lg" />
-        <div>
-          <p className="text-base font-semibold tracking-tight text-foreground">{report.role}</p>
-          <p className="mt-0.5 text-[11px] tabular-nums text-muted">
-            Session {convo.session} · {convo.dateLabel} · {convo.duration} · voice + transcript
-          </p>
+    <div className={embedded ? "px-5 py-6 sm:px-6" : "mx-auto max-w-5xl px-5 py-7 sm:px-8 sm:py-8"}>
+      {/* Conversation header — hidden when embedded (the pane shows identity) */}
+      {!embedded && (
+        <div className="flex items-center gap-3">
+          <Avatar initials={report.initials} size="lg" />
+          <div>
+            <p className="text-base font-semibold tracking-tight text-foreground">{report.role}</p>
+            <p className="mt-0.5 text-[11px] tabular-nums text-muted">
+              Session {convo.session} · {convo.dateLabel} · {convo.duration} · voice + transcript
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* The Read */}
-      <div className="mt-8">
+      <div className={embedded ? "" : "mt-8"}>
         <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted">The Read</span>
         <p className="font-display mt-4 text-xl leading-[1.55] tracking-tight text-foreground sm:text-[23px] sm:leading-[1.55]">
           {convo.read.segments.map((s, i) =>

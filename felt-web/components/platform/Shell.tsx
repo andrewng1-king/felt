@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
@@ -18,6 +18,7 @@ import { HomeView } from "@/components/platform/HomeView";
 import { ConversationsView } from "@/components/platform/ConversationsView";
 import { ReportView } from "@/components/platform/ReportView";
 import { RiskTrendsView } from "@/components/platform/RiskTrendsView";
+import { PaletteSwitcher, type ThemeId } from "@/components/platform/PaletteSwitcher";
 import { andrew, conversations, reports } from "@/content/platform";
 
 type View = "home" | "conversations" | "report" | "risk";
@@ -38,6 +39,18 @@ export function Shell() {
   const reduce = useReducedMotion();
   const [view, setView] = useState<View>("home");
   const [convoId, setConvoId] = useState<string | null>(null);
+  const [theme, setTheme] = useState<ThemeId>("ember");
+
+  useEffect(() => {
+    // Restore the demo palette from a prior visit. Done in an effect (not lazy
+    // init) so SSR and first client render agree, avoiding a hydration mismatch.
+    const saved = localStorage.getItem("felt-theme") as ThemeId | null;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (saved) setTheme(saved);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("felt-theme", theme);
+  }, [theme]);
 
   const convo = conversations.find((c) => c.id === convoId) ?? null;
   const openConvo = (id: string) => {
@@ -85,7 +98,11 @@ export function Shell() {
   );
 
   return (
-    <div data-theme="night" className="flex min-h-screen flex-col bg-background text-foreground md:flex-row">
+    <div
+      data-theme={theme === "light" ? "light" : "night"}
+      data-accent={theme === "light" ? undefined : theme}
+      className="flex min-h-screen flex-col bg-background text-foreground md:flex-row"
+    >
       {/* Sidebar (desktop) / top strip (mobile) */}
       <aside className="sticky top-0 z-40 flex shrink-0 items-center justify-between gap-3 border-b border-line bg-background px-4 py-2.5 md:h-screen md:w-60 md:flex-col md:items-stretch md:justify-start md:border-b-0 md:border-r md:px-3 md:py-4">
         {/* Workspace switcher */}
@@ -153,7 +170,7 @@ export function Shell() {
             </label>
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white outline-none transition hover:bg-accent-strong focus-visible:ring-2 focus-visible:ring-accent/50"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-[color:var(--on-accent)] outline-none transition hover:bg-accent-strong focus-visible:ring-2 focus-visible:ring-accent/50"
             >
               <Plus size={15} weight="bold" /> <span className="hidden sm:inline">New 1:1</span>
             </button>
@@ -185,6 +202,8 @@ export function Shell() {
           </AnimatePresence>
         </div>
       </main>
+
+      <PaletteSwitcher value={theme} onChange={setTheme} />
     </div>
   );
 }

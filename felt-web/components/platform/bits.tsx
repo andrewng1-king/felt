@@ -27,7 +27,7 @@ export function Avatar({
       className={[
         "inline-flex shrink-0 items-center justify-center rounded-full font-mono font-medium uppercase tracking-wide",
         dim,
-        accent ? "bg-accent-strong text-white" : "bg-surface text-ink-soft",
+        accent ? "bg-accent-strong text-[color:var(--on-accent)]" : "bg-surface text-ink-soft",
       ].join(" ")}
       aria-hidden
     >

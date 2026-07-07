@@ -46,12 +46,71 @@
   --accent-soft: #2a1710;    /* opaque dark-orange tint for selected/alert wells */
   --highlight: #e8703a;
   --highlight-soft: #2a1710;
+  --on-accent: #ffffff;  /* text/icons that sit ON an accent fill */
   --ink-deep: #1b1b1e;   /* emphasis card base (flat, no glow) */
 
   /* One legible family for the whole app — no serif display, no mono labels. */
   --app-sans: var(--font-switzer), system-ui, sans-serif;
   --app-serif: var(--font-switzer), system-ui, sans-serif;
   --app-mono: var(--font-switzer), ui-monospace, monospace;
+}
+
+/* Accent presets (demo palette switcher). These override ONLY the accent tokens
+   on top of the near-black neutral base, so switching is one attribute change.
+   --on-accent flips to dark where the accent is light enough to need it. */
+[data-accent="ember"] {
+  --accent: #e8703a; --accent-strong: #f2814d; --accent-soft: #2a1710;
+  --highlight: #e8703a; --highlight-soft: #2a1710; --on-accent: #ffffff;
+}
+[data-accent="signal"] {
+  --accent: #6e76f1; --accent-strong: #868cf5; --accent-soft: #16182b;
+  --highlight: #6e76f1; --highlight-soft: #16182b; --on-accent: #ffffff;
+}
+[data-accent="orchid"] {
+  --accent: #a78bfa; --accent-strong: #bda3fc; --accent-soft: #1c162e;
+  --highlight: #a78bfa; --highlight-soft: #1c162e; --on-accent: #14101f;
+}
+[data-accent="mono"] {
+  --accent: #e4e4e7; --accent-strong: #ffffff; --accent-soft: #1b1b1e;
+  --highlight: #e4e4e7; --highlight-soft: #1b1b1e; --on-accent: #0a0a0b;
+}
+
+/* Light flat app theme (a switchable option). Flat surfaces, warm orange. */
+[data-theme="light"] {
+  color-scheme: light;
+  --background: #faf9f7;
+  --bg-alt: #f2f0ea;
+  --surface: #ffffff;
+  --surface-2: #f4f2ec;
+  --foreground: #1a1712;
+  --ink-soft: #5a5347;
+  --muted: #8b857a;
+  --line: #e6e2d9;
+  --line-strong: #d7d2c6;
+  --accent: #c65f34;
+  --accent-strong: #a94e2a;
+  --accent-soft: #f6e6dc;
+  --highlight: #c65f34;
+  --highlight-soft: #f6e6dc;
+  --on-accent: #ffffff;
+  --ink-deep: #1a1712;
+  --app-sans: var(--font-switzer), system-ui, sans-serif;
+  --app-serif: var(--font-switzer), system-ui, sans-serif;
+  --app-mono: var(--font-switzer), ui-monospace, monospace;
+}
+[data-theme="light"] .glass {
+  background: var(--surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+/* On the light app theme the emphasis card stays a dark block so its white
+   text keeps working (classic inverted-emphasis panel). */
+[data-theme="light"] .felt-hero {
+  background: #1a1712;
+  color: #fff;
+  border: none;
 }
 
 @theme inline {
