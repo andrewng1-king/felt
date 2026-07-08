@@ -122,7 +122,7 @@ export function ReportView({ convo, embedded = false }: { convo: Conversation; e
       <section className="mt-12 border-t border-line pt-10">
         <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted">The evidence</span>
         <h2 className="mt-3 text-lg font-semibold tracking-tight text-foreground">
-          How {convo.reportId === "priya" ? "she" : "he"} moved, second by second.
+          How {report.pronoun} moved, second by second.
         </h2>
         <div className="glass mt-6 rounded-2xl p-5 sm:p-8">
           {/* key forces a fresh chart when switching conversations */}

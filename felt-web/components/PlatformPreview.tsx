@@ -50,8 +50,8 @@ export function PlatformPreview() {
       </div>
 
       <div className="flex">
-        {/* Signal rail (static) */}
-        <div className="flex shrink-0 flex-col items-center gap-1.5 border-r border-line py-4">
+        {/* Signal rail (static) — decorative chrome, hidden on phones for width. */}
+        <div className="hidden shrink-0 flex-col items-center gap-1.5 border-r border-line py-4 sm:flex">
           <div className="px-2.5">
             {railIcons.map((Icon, i) => (
               <div

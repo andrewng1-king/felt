@@ -7,6 +7,7 @@ import {
   House,
   ChatsCircle,
   WarningDiamond,
+  Target,
   ArrowSquareOut,
   CaretUpDown,
   MagnifyingGlass,
@@ -15,22 +16,25 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { Avatar } from "@/components/platform/bits";
 import { HomeView } from "@/components/platform/HomeView";
+import { PrepareView } from "@/components/platform/PrepareView";
 import { ConversationsView } from "@/components/platform/ConversationsView";
 import { ReportView } from "@/components/platform/ReportView";
 import { RiskTrendsView } from "@/components/platform/RiskTrendsView";
 import { PaletteSwitcher, type ThemeId } from "@/components/platform/PaletteSwitcher";
-import { andrew, conversations, reports } from "@/content/platform";
+import { andrew, conversations, reports, type ReportId } from "@/content/platform";
 
-type View = "home" | "conversations" | "report" | "risk";
+type View = "home" | "prepare" | "conversations" | "report" | "risk";
 
 const nav: { id: Exclude<View, "report">; label: string; Icon: typeof House }[] = [
   { id: "home", label: "Overview", Icon: House },
+  { id: "prepare", label: "Prepare", Icon: Target },
   { id: "conversations", label: "Conversations", Icon: ChatsCircle },
   { id: "risk", label: "Risk & Trends", Icon: WarningDiamond },
 ];
 
 const titles: Record<Exclude<View, "report">, string> = {
   home: "Overview",
+  prepare: "Prepare",
   conversations: "Conversations",
   risk: "Risk & Trends",
 };
@@ -39,6 +43,7 @@ export function Shell() {
   const reduce = useReducedMotion();
   const [view, setView] = useState<View>("home");
   const [convoId, setConvoId] = useState<string | null>(null);
+  const [prepPerson, setPrepPerson] = useState<ReportId | undefined>(undefined);
   const [theme, setTheme] = useState<ThemeId>("ember");
 
   useEffect(() => {
@@ -56,6 +61,10 @@ export function Shell() {
   const openConvo = (id: string) => {
     setConvoId(id);
     setView("report");
+  };
+  const openPrepare = (id?: ReportId) => {
+    setPrepPerson(id);
+    setView("prepare");
   };
   const activeNav = view === "report" ? "conversations" : view;
   const pageTitle =
@@ -194,8 +203,17 @@ export function Shell() {
               exit={reduce ? undefined : { opacity: 0, y: -6 }}
               transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             >
-              {view === "home" && <HomeView onOpenConvo={openConvo} onOpenRisk={() => setView("risk")} />}
-              {view === "conversations" && <ConversationsView onOpenConvo={openConvo} />}
+              {view === "home" && (
+                <HomeView
+                  onOpenConvo={openConvo}
+                  onOpenRisk={() => setView("risk")}
+                  onOpenPrepare={openPrepare}
+                />
+              )}
+              {view === "prepare" && <PrepareView initialPerson={prepPerson} />}
+              {view === "conversations" && (
+                <ConversationsView onOpenConvo={openConvo} onOpenPrepare={openPrepare} />
+              )}
               {view === "risk" && <RiskTrendsView onOpenConvo={openConvo} />}
               {view === "report" && convo && <ReportView convo={convo} />}
             </motion.div>

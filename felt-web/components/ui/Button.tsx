@@ -16,13 +16,14 @@ type Props = {
   href: string;
   variant?: Variant;
   className?: string;
+  onClick?: () => void;
   children: React.ReactNode;
 };
 
 /** Link styled as a button. Build CTAs from this, not raw anchors. */
-export function Button({ href, variant = "primary", className, children }: Props) {
+export function Button({ href, variant = "primary", className, onClick, children }: Props) {
   return (
-    <Link href={href} className={cn(base, variants[variant], className)}>
+    <Link href={href} onClick={onClick} className={cn(base, variants[variant], className)}>
       {children}
     </Link>
   );

@@ -1,14 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MagnifyingGlass, Funnel, ChatCircle } from "@phosphor-icons/react/dist/ssr";
+import { MagnifyingGlass, Funnel, ChatCircle, Target } from "@phosphor-icons/react/dist/ssr";
 import { Avatar, Sparkline } from "@/components/platform/bits";
 import { ReportView } from "@/components/platform/ReportView";
 import {
   activity,
   conversations,
   reportTrends,
+  prepScenarios,
   type RosterEntry,
+  type ReportId,
 } from "@/content/platform";
 
 type Sort = "attention" | "recent" | "name";
@@ -25,7 +27,13 @@ function statusOf(p: RosterEntry) {
 const convosFor = (reportId?: string) =>
   reportId ? conversations.filter((c) => c.reportId === reportId) : [];
 
-export function ConversationsView({ onOpenConvo }: { onOpenConvo: (id: string) => void }) {
+export function ConversationsView({
+  onOpenConvo,
+  onOpenPrepare,
+}: {
+  onOpenConvo: (id: string) => void;
+  onOpenPrepare: (id: ReportId) => void;
+}) {
   const roster = activity.roster;
   const [selectedId, setSelectedId] = useState(roster[0].id);
   const [convoId, setConvoId] = useState<string | null>(() => {
@@ -107,7 +115,7 @@ export function ConversationsView({ onOpenConvo }: { onOpenConvo: (id: string) =
           {list.map((p) => {
             const on = p.id === selectedId;
             const st = statusOf(p);
-            const trend = reportTrends[p.id as "daniel" | "priya"];
+            const trend = reportTrends[p.id as keyof typeof reportTrends];
             return (
               <button
                 key={p.id}
@@ -160,7 +168,19 @@ export function ConversationsView({ onOpenConvo }: { onOpenConvo: (id: string) =
               </div>
             </div>
             {personConvos.length > 0 && (
-              <div className="flex items-center gap-1">
+              <div className="flex flex-wrap items-center gap-1">
+                {selected.reportId && prepScenarios[selected.reportId] && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => onOpenPrepare(selected.reportId!)}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-line px-2 py-1 text-xs font-medium text-ink-soft outline-none transition hover:border-line-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent/50"
+                    >
+                      <Target size={13} weight="fill" className="text-accent" /> Rehearse
+                    </button>
+                    <span className="mx-1 hidden h-4 w-px bg-line sm:block" aria-hidden />
+                  </>
+                )}
                 <span className="mr-1 text-[11px] uppercase tracking-[0.1em] text-muted">Sessions</span>
                 {personConvos.map((c) => (
                   <button

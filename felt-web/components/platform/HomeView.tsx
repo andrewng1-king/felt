@@ -1,18 +1,34 @@
-import { ArrowRight, WarningDiamond, CalendarBlank, Clock } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, WarningDiamond, CalendarBlank, Clock, Target } from "@phosphor-icons/react/dist/ssr";
 import { Avatar, DirectionBadge } from "@/components/platform/bits";
 import { StatTile, SectionHeader, WeekBars } from "@/components/platform/ui";
-import { andrew, activity, conversations, reports, riskView } from "@/content/platform";
+import {
+  andrew,
+  activity,
+  conversations,
+  reports,
+  riskView,
+  recentActivity,
+  prepScenarios,
+  type ReportId,
+} from "@/content/platform";
 
 export function HomeView({
   onOpenConvo,
   onOpenRisk,
+  onOpenPrepare,
 }: {
   onOpenConvo: (id: string) => void;
   onOpenRisk: () => void;
+  onOpenPrepare: (id?: ReportId) => void;
 }) {
-  const recent = [...conversations].reverse().slice(0, 5);
+  const recent = recentActivity.map((id) => conversations.find((c) => c.id === id)!);
   const overdue = activity.roster.filter((r) => r.overdue);
   const { kpis } = activity;
+
+  // The person most worth rehearsing before your next 1:1 (the urgent scenario).
+  const prepTarget = activity.roster.find((r) => r.reportId && prepScenarios[r.reportId]?.urgent);
+  const prepId = prepTarget?.reportId;
+  const prepScenario = prepId ? prepScenarios[prepId] : undefined;
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-7 sm:px-8 sm:py-8">
@@ -28,7 +44,7 @@ export function HomeView({
       {/* KPI row — the glance layer: how much am I doing, how's the cadence */}
       <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatTile label="Sessions" value={kpis.sessions} hint="1:1s logged this month" />
-        <StatTile label="Time in 1:1s" value={kpis.minutes} unit="min" hint="≈ 2h 28m total" />
+        <StatTile label="Time in 1:1s" value={kpis.minutes} unit="min" hint="≈ 2h 44m total" />
         <StatTile
           label="People covered"
           value={`${kpis.peopleCovered}/${kpis.peopleTotal}`}
@@ -115,6 +131,27 @@ export function HomeView({
               <ArrowRight size={13} className="transition group-hover:translate-x-0.5" />
             </span>
           </button>
+
+          {/* Focus Brief — rehearse before the next hard 1:1 */}
+          {prepId && prepScenario && (
+            <button
+              type="button"
+              onClick={() => onOpenPrepare(prepId)}
+              className="group flex w-full flex-col rounded-2xl border border-line bg-surface p-5 text-left outline-none transition hover:border-line-strong focus-visible:ring-2 focus-visible:ring-accent/50"
+            >
+              <div className="flex items-center gap-2">
+                <Target size={16} weight="fill" className="text-accent" />
+                <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
+                  Prepare · before your next 1:1
+                </span>
+              </div>
+              <p className="mt-2.5 text-sm leading-relaxed text-foreground">{prepScenario.title}</p>
+              <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-accent">
+                Rehearse with {reports[prepId].name}
+                <ArrowRight size={13} className="transition group-hover:translate-x-0.5" />
+              </span>
+            </button>
+          )}
 
           {/* Overdue 1:1s */}
           <section className="rounded-2xl border border-line bg-surface p-5">
