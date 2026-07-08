@@ -1,32 +1,43 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import { ArrowRight, WarningDiamond, CalendarBlank, Clock, Target } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, CalendarBlank, Target } from "@phosphor-icons/react/dist/ssr";
 import { Avatar, DirectionBadge } from "@/components/platform/bits";
 import { StatTile, SectionHeader, WeekBars } from "@/components/platform/ui";
+import {
+  SignalRow,
+  SeveritySummary,
+  countBySeverity,
+  bySeverity,
+} from "@/components/platform/severity";
 import {
   andrew,
   activity,
   conversations,
   reports,
-  riskView,
   recentActivity,
   prepScenarios,
+  signals,
   type ReportId,
+  type Signal,
 } from "@/content/platform";
 
 export function HomeView({
   onOpenConvo,
   onOpenRisk,
   onOpenPrepare,
+  onSignal,
 }: {
   onOpenConvo: (id: string) => void;
   onOpenRisk: () => void;
   onOpenPrepare: (id?: ReportId) => void;
+  onSignal: (signal: Signal) => void;
 }) {
   const reduce = useReducedMotion();
   const recent = recentActivity.map((id) => conversations.find((c) => c.id === id)!);
-  const overdue = activity.roster.filter((r) => r.overdue);
+  // The needs-attention queue: everything that isn't good news, most-severe first.
+  const attention = signals.filter((s) => s.severity !== "positive").sort(bySeverity);
+  const attentionCounts = countBySeverity(attention);
   const { kpis } = activity;
 
   // The person most worth rehearsing before your next 1:1 (the urgent scenario).
@@ -118,26 +129,27 @@ export function HomeView({
           </section>
         </div>
 
-        {/* Side rail — needs attention */}
-        <div className="space-y-5">
-          {/* Risk nudge */}
-          <button
-            type="button"
-            onClick={onOpenRisk}
-            className="group flex w-full flex-col rounded-2xl border border-accent/40 bg-accent-soft p-5 text-left outline-none transition hover:-translate-y-0.5 hover:border-accent/70 focus-visible:ring-2 focus-visible:ring-accent/50"
-          >
-            <div className="flex items-center gap-2">
-              <WarningDiamond size={16} weight="fill" className="text-accent" />
-              <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-accent">
-                Risk signal · {riskView.alert.level}
-              </span>
+        {/* Side rail — needs attention, severity-ranked */}
+        <div className="space-y-6">
+          <div>
+            <div className="flex items-baseline justify-between gap-2 px-0.5">
+              <h2 className="text-[15px] font-semibold tracking-tight text-foreground">Needs attention</h2>
+              <button
+                type="button"
+                onClick={onOpenRisk}
+                className="inline-flex items-center gap-1 rounded text-xs font-medium text-accent outline-none transition hover:text-accent-strong focus-visible:ring-2 focus-visible:ring-accent/50"
+              >
+                Risk &amp; Trends
+                <ArrowRight size={13} />
+              </button>
             </div>
-            <p className="mt-2.5 text-sm leading-relaxed text-foreground">{riskView.alert.summary}</p>
-            <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-accent">
-              Open Risk &amp; Trends
-              <ArrowRight size={13} className="transition group-hover:translate-x-0.5" />
-            </span>
-          </button>
+            <SeveritySummary counts={attentionCounts} className="mt-3 px-0.5" />
+            <div className="mt-3 space-y-2.5">
+              {attention.map((s) => (
+                <SignalRow key={s.id} signal={s} onClick={() => onSignal(s)} />
+              ))}
+            </div>
+          </div>
 
           {/* Focus Brief — rehearse before the next hard 1:1 */}
           {prepId && prepScenario && (
@@ -159,27 +171,6 @@ export function HomeView({
               </span>
             </button>
           )}
-
-          {/* Overdue 1:1s */}
-          <section className="rounded-2xl border border-line bg-surface p-5">
-            <SectionHeader title="Overdue 1:1s" />
-            <p className="mt-1 text-xs text-ink-soft">Haven&apos;t met in over two weeks.</p>
-            <div className="mt-4 space-y-3">
-              {overdue.map((r) => (
-                <div key={r.id} className="flex items-center gap-3">
-                  <Avatar initials={r.initials} size="sm" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-foreground">{r.name}</p>
-                    <p className="truncate text-[11px] text-muted">{r.role}</p>
-                  </div>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-medium tabular-nums text-accent">
-                    <Clock size={12} weight="fill" />
-                    {r.daysSince}d
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
         </div>
       </div>
     </div>

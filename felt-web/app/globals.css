@@ -22,6 +22,14 @@
   --surface: #ede7d9;
   --ink-deep: #16130e;
 
+  /* Semantic status scale — meaning-first, separate from the brand accent.
+     Used only in /app (night/light); defined here so the utilities never
+     resolve to an empty var on marketing pages. */
+  --danger: #c0392b;   --danger-soft: #f6e3df;
+  --warn: #b45309;     --warn-soft: #f8ecd9;
+  --positive: #047857; --positive-soft: #e2f2ea;
+  --info: #2563eb;     --info-soft: #e6eefe;
+
   /* Type is indirected through --app-* so a scoped theme can swap the whole
      stack without touching component classes. Site default = Geist/Newsreader. */
   --app-sans: var(--font-geist-sans), system-ui, sans-serif;
@@ -48,6 +56,17 @@
   --highlight-soft: #2a1710;
   --on-accent: #ffffff;  /* text/icons that sit ON an accent fill */
   --ink-deep: #1b1b1e;   /* emphasis card base (flat, no glow) */
+
+  /* Semantic status scale (dark). Orange stays the BRAND accent; these carry
+     STATUS only, so severity is never guessed from one hue. -400-level values
+     clear ~4.5:1 on the near-black base and stay mutually distinct.
+       danger  = eroding now   warn = needs action soon
+       positive = healthy/up    info = watch / insight
+     "-soft" is an opaque dark tint for alert wells, matching --accent-soft. */
+  --danger: #f87171;   --danger-soft: #2a1416;
+  --warn: #f5a524;     --warn-soft: #2a2009;
+  --positive: #34d399; --positive-soft: #0c2a20;
+  --info: #6ea8fb;     --info-soft: #10203a;
 
   /* One legible family for the whole app — no serif display, no mono labels. */
   --app-sans: var(--font-switzer), system-ui, sans-serif;
@@ -94,6 +113,11 @@
   --highlight-soft: #f6e6dc;
   --on-accent: #ffffff;
   --ink-deep: #1a1712;
+  /* Semantic status scale (light app). Darker hues for text contrast on white. */
+  --danger: #dc2626;   --danger-soft: #fbeae8;
+  --warn: #b45309;     --warn-soft: #fbf0e1;
+  --positive: #047857; --positive-soft: #e4f3ec;
+  --info: #2563eb;     --info-soft: #e8f0fe;
   --app-sans: var(--font-switzer), system-ui, sans-serif;
   --app-serif: var(--font-switzer), system-ui, sans-serif;
   --app-mono: var(--font-switzer), ui-monospace, monospace;
@@ -129,6 +153,14 @@
   --color-highlight: var(--highlight);
   --color-highlight-soft: var(--highlight-soft);
   --color-ink-deep: var(--ink-deep);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-positive: var(--positive);
+  --color-positive-soft: var(--positive-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
   --font-sans: var(--app-sans);
   --font-mono: var(--app-mono);
   --font-serif: var(--app-serif);

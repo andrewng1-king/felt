@@ -4,12 +4,12 @@ import { ArrowUpRight, ArrowDownRight, ArrowRight } from "@phosphor-icons/react/
 import { motion, useReducedMotion } from "motion/react";
 import type { Direction, Tone } from "@/content/platform";
 
-// Single-accent system: orange = the one that needs attention (cool/concern),
-// bright = good (warm), muted = neutral (mixed). Color only where it means something.
+// Per-report metric tone → semantic status. cool = attention (amber),
+// warm = healthy (green), mixed = neutral (muted). Color only where it means something.
 export const toneDot: Record<Tone, string> = {
-  warm: "bg-foreground",
+  warm: "bg-positive",
   mixed: "bg-muted",
-  cool: "bg-accent",
+  cool: "bg-warn",
 };
 
 export function Avatar({
@@ -36,7 +36,7 @@ export function Avatar({
   );
 }
 
-/** Arrow + label. Down = the alert color; up = calm positive; steady = muted. */
+/** Arrow + label. Down = danger red; up = healthy green; steady = muted. */
 export function DirectionBadge({
   direction,
   label,
@@ -48,7 +48,7 @@ export function DirectionBadge({
 }) {
   const Icon = direction === "down" ? ArrowDownRight : direction === "up" ? ArrowUpRight : ArrowRight;
   const color =
-    direction === "down" ? "text-accent" : direction === "up" ? "text-foreground" : "text-muted";
+    direction === "down" ? "text-danger" : direction === "up" ? "text-positive" : "text-muted";
   return (
     <span
       className={[
@@ -64,15 +64,16 @@ export function DirectionBadge({
 }
 
 /** Tiny trend line from 0-1 values. Shape only — no axis, no numbers (no grade).
-    Down rides the teal risk signal; everything else stays calm foreground. Draws
-    itself in on mount, with a soft pulse on the latest point. */
+    Down = danger red, up = healthy green, steady = neutral. Draws itself in on
+    mount, with a soft red pulse on the latest point when falling. */
 export function Sparkline({ points, direction }: { points: number[]; direction: Direction }) {
   const reduce = useReducedMotion();
   const W = 76;
   const H = 26;
   const pad = 3;
   const n = points.length;
-  const stroke = direction === "down" ? "var(--accent)" : "var(--foreground)";
+  const stroke =
+    direction === "down" ? "var(--danger)" : direction === "up" ? "var(--positive)" : "var(--foreground)";
   const coords = points.map((v, i) => {
     const x = pad + (i / (n - 1)) * (W - pad * 2);
     const y = H - pad - v * (H - pad * 2);

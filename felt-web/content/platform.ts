@@ -671,6 +671,116 @@ export const riskView = {
   },
 };
 
+/**
+ * Severity ladder — meaning-first, drives the status colors:
+ *   critical (red) = a relationship eroding now
+ *   warning  (amber) = needs action soon (overdue, drifting)
+ *   watch    (blue) = keep an eye on it / a coaching insight
+ *   positive (green) = healthy or improving
+ */
+export type Severity = "critical" | "warning" | "watch" | "positive";
+
+export type SignalTarget = { view: "risk" | "prepare" | "convo" | "new"; id?: string };
+
+export type Signal = {
+  id: string;
+  severity: Severity;
+  /** Who it's about (for the avatar). reportId set only when it opens a report. */
+  name: string;
+  initials: string;
+  reportId?: ReportId;
+  title: string;
+  detail: string;
+  when: string;
+  action?: { label: string } & SignalTarget;
+  unread?: boolean;
+};
+
+/**
+ * The one ranked signal feed — powers the notification center, the Risk & Trends
+ * ranked list, and the Home "needs attention" rail. Hand-authored to stay
+ * consistent with the roster and reads above (no computed scores).
+ */
+export const signals: Signal[] = [
+  {
+    id: "daniel-risk",
+    severity: "critical",
+    name: "Daniel K.",
+    initials: "DK",
+    reportId: "daniel",
+    title: "Trust with Daniel is eroding",
+    detail: "Fourth session cooling in a row — warmth down, answers shorter, last 1:1 ended early.",
+    when: "2h ago",
+    action: { label: "Review risk", view: "risk" },
+    unread: true,
+  },
+  {
+    id: "sam-overdue",
+    severity: "warning",
+    name: "Sam O.",
+    initials: "SO",
+    title: "Sam O. is overdue",
+    detail: "25 days since your last 1:1 — the longest gap on your team.",
+    when: "Today",
+    action: { label: "Schedule 1:1", view: "new" },
+    unread: true,
+  },
+  {
+    id: "nadia-overdue",
+    severity: "warning",
+    name: "Nadia H.",
+    initials: "NH",
+    title: "Nadia H. is overdue",
+    detail: "17 days since your last 1:1. One session logged all month.",
+    when: "Today",
+    action: { label: "Schedule 1:1", view: "new" },
+    unread: true,
+  },
+  {
+    id: "andrew-blindspot",
+    severity: "watch",
+    name: "You",
+    initials: "A",
+    title: "You interrupt more under tension",
+    detail: "Your interruptions cluster right after a hard topic surfaces — improving, but still your clearest tell.",
+    when: "This week",
+    action: { label: "See the trend", view: "risk" },
+  },
+  {
+    id: "marcus-guarded",
+    severity: "watch",
+    name: "Marcus T.",
+    initials: "MT",
+    reportId: "marcus",
+    title: "Marcus stays guarded",
+    detail: "Three “all good” sessions — low disclosure, not conflict. Specific praise is your way in.",
+    when: "3 days ago",
+    action: { label: "Rehearse", view: "prepare", id: "marcus" },
+  },
+  {
+    id: "priya-climbing",
+    severity: "positive",
+    name: "Priya S.",
+    initials: "PS",
+    reportId: "priya",
+    title: "Priya keeps climbing",
+    detail: "Three strong sessions running — warmth trending up, real candor returning.",
+    when: "3 days ago",
+    action: { label: "Open report", view: "convo", id: "priya-3" },
+  },
+  {
+    id: "elena-healthy",
+    severity: "positive",
+    name: "Elena R.",
+    initials: "ER",
+    reportId: "elena",
+    title: "Elena is in a good place",
+    detail: "Peer-level candor, trend up. No erosion signals in this relationship.",
+    when: "6 days ago",
+    action: { label: "Open report", view: "convo", id: "elena-2" },
+  },
+];
+
 /** Per-report longitudinal trend of the Empathy Mirror reading, for sparklines. */
 export const reportTrends: Record<ReportId, { dir: Direction; points: number[] }> = {
   daniel: { dir: "down", points: [0.72, 0.52, 0.4, 0.35] },

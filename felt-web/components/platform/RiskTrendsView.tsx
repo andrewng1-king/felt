@@ -2,37 +2,69 @@ import {
   ArrowDownRight,
   ArrowUpRight,
   ArrowRight,
-  WarningDiamond,
-  Eye,
 } from "@phosphor-icons/react/dist/ssr";
 import { Avatar, Sparkline } from "@/components/platform/bits";
-import { reports, riskView, reportTrends, conversations } from "@/content/platform";
+import {
+  SeveritySummary,
+  SignalRow,
+  StatusPill,
+  severityMeta,
+  countBySeverity,
+  bySeverity,
+} from "@/components/platform/severity";
+import {
+  reports,
+  riskView,
+  reportTrends,
+  conversations,
+  signals,
+  type Direction,
+  type ReportId,
+  type Signal,
+} from "@/content/platform";
 
-export function RiskTrendsView({ onOpenConvo }: { onOpenConvo: (id: string) => void }) {
+const trendOrder: ReportId[] = ["daniel", "priya", "elena", "marcus"];
+const trendLabel: Record<Direction, { label: string; className: string }> = {
+  down: { label: "Falling", className: "text-danger" },
+  up: { label: "Rising", className: "text-positive" },
+  steady: { label: "Steady", className: "text-muted" },
+};
+
+export function RiskTrendsView({
+  onOpenConvo,
+  onSignal,
+}: {
+  onOpenConvo: (id: string) => void;
+  onSignal: (signal: Signal) => void;
+}) {
   const alertReport = reports[riskView.alert.reportId];
-  const healthyReport = reports[riskView.healthy.reportId];
   const latestDaniel = [...conversations].reverse().find((c) => c.reportId === "daniel");
+  const counts = countBySeverity(signals);
+  // The hero owns the one critical signal; the ranked list shows the rest.
+  const ranked = signals.filter((s) => s.severity !== "critical").sort(bySeverity);
+  const crit = severityMeta.critical;
 
   return (
     <div className="mx-auto max-w-5xl px-5 py-7 sm:px-8 sm:py-8">
-      <p className="max-w-xl text-sm text-ink-soft">
-        One rough conversation is noise. A falling line across weeks is the signal. This is where felt.
-        watches the direction, not the day.
-      </p>
+      {/* Header — the plain-English promise + the glance-layer severity summary */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <p className="max-w-md text-sm leading-relaxed text-ink-soft">
+          One rough conversation is noise. A falling line across weeks is the signal. felt. watches the
+          direction, not the day.
+        </p>
+        <SeveritySummary counts={counts} />
+      </div>
 
-      {/* The alert */}
-      <section className="mt-6 rounded-2xl border border-accent/40 bg-accent-soft p-6 sm:p-7">
+      {/* Hero alert — the one thing that matters most, in danger red */}
+      <section className={`mt-6 rounded-2xl border border-l-2 p-6 sm:p-7 ${crit.well} ${crit.edge}`}>
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             <Avatar initials={alertReport.initials} size="lg" />
             <div>
-              <div className="flex items-center gap-2">
-                <WarningDiamond size={16} weight="fill" className="text-accent" />
-                <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-accent">
-                  Risk signal · {riskView.alert.level}
-                </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusPill severity="critical" label={`Critical · ${riskView.alert.level}`} />
               </div>
-              <h2 className="mt-1 text-lg font-semibold tracking-tight text-foreground">
+              <h2 className="mt-1.5 text-lg font-semibold tracking-tight text-foreground">
                 {alertReport.name}
               </h2>
             </div>
@@ -44,12 +76,12 @@ export function RiskTrendsView({ onOpenConvo }: { onOpenConvo: (id: string) => v
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           {riskView.alert.factors.map((f) => (
-            <div key={f.label} className="rounded-xl border border-line bg-background/50 p-4">
+            <div key={f.label} className="rounded-xl border border-line bg-surface p-4">
               <div className="flex items-center gap-2">
                 {f.dir === "down" ? (
-                  <ArrowDownRight size={14} weight="bold" className="text-accent" />
+                  <ArrowDownRight size={14} weight="bold" className="text-danger" />
                 ) : (
-                  <ArrowUpRight size={14} weight="bold" className="text-accent" />
+                  <ArrowUpRight size={14} weight="bold" className="text-danger" />
                 )}
                 <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted">
                   {f.label}
@@ -60,9 +92,9 @@ export function RiskTrendsView({ onOpenConvo }: { onOpenConvo: (id: string) => v
           ))}
         </div>
 
-        <div className="mt-6 flex flex-col gap-4 border-t border-accent/20 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="flex items-start gap-2 text-sm leading-relaxed text-accent">
-            <ArrowRight size={15} weight="bold" className="mt-0.5 shrink-0" />
+        <div className="mt-6 flex flex-col gap-4 border-t border-danger/20 pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex items-start gap-2 text-sm leading-relaxed text-foreground">
+            <ArrowRight size={15} weight="bold" className="mt-0.5 shrink-0 text-danger" />
             <span>
               <span className="font-medium">Next conversation:</span> {riskView.alert.nextStep}
             </span>
@@ -79,37 +111,45 @@ export function RiskTrendsView({ onOpenConvo }: { onOpenConvo: (id: string) => v
         </div>
       </section>
 
-      {/* The healthy counterweight */}
-      <section className="mt-4 flex items-start gap-3 rounded-2xl border border-line bg-surface p-5 sm:p-6">
-        <ArrowUpRight size={18} weight="bold" className="mt-0.5 shrink-0 text-foreground" />
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <Avatar initials={healthyReport.initials} size="sm" />
-            <h3 className="text-base font-semibold tracking-tight text-foreground">
-              {healthyReport.name} — trending the other way
-            </h3>
-          </div>
-          <p className="mt-2 text-sm leading-relaxed text-ink-soft">{riskView.healthy.summary}</p>
+      {/* Ranked signals — everything else, most-severe first */}
+      <section className="mt-8">
+        <div className="flex items-baseline justify-between gap-3">
+          <h3 className="text-[15px] font-semibold tracking-tight text-foreground">All signals</h3>
+          <span className="text-xs tabular-nums text-muted">{ranked.length} more</span>
         </div>
-        <Sparkline points={reportTrends.priya.points} direction="up" />
+        <div className="mt-4 space-y-2.5">
+          {ranked.map((s) => (
+            <SignalRow key={s.id} signal={s} onClick={() => onSignal(s)} />
+          ))}
+        </div>
       </section>
 
-      {/* Andrew's own blind spot */}
-      <section className="felt-hero mt-6 rounded-2xl p-6 text-white sm:p-7">
-        <div className="flex items-center gap-2">
-          <Eye size={16} weight="fill" className="text-white/70" />
-          <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-white/60">
-            Your blind spot · behavioral trend
-          </span>
+      {/* Trends — direction across every tracked relationship */}
+      <section className="mt-8">
+        <div className="flex items-baseline justify-between gap-3">
+          <h3 className="text-[15px] font-semibold tracking-tight text-foreground">Trends</h3>
+          <span className="text-xs text-muted">Direction over recent sessions</span>
         </div>
-        <h3 className="mt-3 text-lg font-semibold leading-snug tracking-tight sm:text-xl">
-          {riskView.blindSpot.pattern}
-        </h3>
-        <p className="mt-3 max-w-xl leading-relaxed text-white/70">{riskView.blindSpot.detail}</p>
-        <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white/80">
-          <ArrowUpRight size={14} weight="bold" />
-          {riskView.blindSpot.slope}
-        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {trendOrder.map((id) => {
+            const t = reportTrends[id];
+            const tl = trendLabel[t.dir];
+            return (
+              <div key={id} className="rounded-xl border border-line bg-surface p-4">
+                <div className="flex items-center gap-2.5">
+                  <Avatar initials={reports[id].initials} size="sm" />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground">{reports[id].name}</p>
+                    <p className={`text-[11px] font-medium ${tl.className}`}>{tl.label}</p>
+                  </div>
+                </div>
+                <div className="mt-3 flex justify-end">
+                  <Sparkline points={t.points} direction={t.dir} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
     </div>
   );

@@ -6,13 +6,27 @@ import {
   Trophy,
 } from "@phosphor-icons/react/dist/ssr";
 import { EmpathyMirror } from "@/components/EmpathyMirror";
-import { Avatar, DirectionBadge, toneDot } from "@/components/platform/bits";
+import { Avatar, DirectionBadge } from "@/components/platform/bits";
 import {
   reports,
   pillarSkeleton,
   type Conversation,
   type MetricState,
 } from "@/content/platform";
+import { cn } from "@/lib/utils";
+
+/** Per-metric tone → a calm status label. Concerns read amber, healthy green,
+    the rest neutral. Still no grades — a lens, not a score. */
+function metricStatus(m: MetricState): { label: string; text: string; dot: string } {
+  if (m.locked) return { label: "Not tracked", text: "text-muted", dot: "bg-muted" };
+  if (m.tone === "warm") return { label: "Healthy", text: "text-positive", dot: "bg-positive" };
+  if (m.tone === "cool") return { label: "Attention", text: "text-warn", dot: "bg-warn" };
+  return { label: "Neutral", text: "text-muted", dot: "bg-muted" };
+}
+
+/** Concern-first ordering within a pillar so the eye lands on what needs it. */
+const toneRank = (m: MetricState) =>
+  m.locked ? 3 : m.tone === "cool" ? 0 : m.tone === "mixed" ? 1 : 2;
 
 function MetricCard({
   name,
@@ -25,29 +39,37 @@ function MetricCard({
   seeAbove?: boolean;
   metric: MetricState;
 }) {
+  const st = metricStatus(metric);
   return (
     <article
-      className={[
+      className={cn(
         "flex h-full flex-col rounded-xl border p-4 transition",
         metric.locked
           ? "border-dashed border-line bg-transparent"
           : "border-line bg-surface hover:border-line-strong",
-      ].join(" ")}
+      )}
     >
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          {metric.locked ? (
-            <LockSimple size={12} weight="bold" className="text-muted" aria-hidden />
-          ) : (
-            <span className={`h-2 w-2 rounded-full ${toneDot[metric.tone]}`} aria-hidden />
-          )}
-          <h4 className="text-sm font-semibold tracking-tight text-foreground">{name}</h4>
-        </div>
-        <span className="shrink-0 text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
-          {phase}
-        </span>
+      <div className="flex items-start justify-between gap-3">
+        <h4 className="text-sm font-semibold tracking-tight text-foreground">{name}</h4>
+        {metric.locked ? (
+          <span className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
+            <LockSimple size={11} weight="bold" aria-hidden />
+            {st.label}
+          </span>
+        ) : (
+          <span
+            className={cn(
+              "inline-flex shrink-0 items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.08em]",
+              st.text,
+            )}
+          >
+            <span className={cn("h-1.5 w-1.5 rounded-full", st.dot)} aria-hidden />
+            {st.label}
+          </span>
+        )}
       </div>
-      <p className={`mt-2.5 text-sm leading-relaxed ${metric.locked ? "text-muted" : "text-ink-soft"}`}>
+      <span className="mt-1 text-[10px] font-medium uppercase tracking-[0.1em] text-muted">{phase}</span>
+      <p className={cn("mt-2.5 text-sm leading-relaxed", metric.locked ? "text-muted" : "text-ink-soft")}>
         {metric.state}
       </p>
       {metric.reframe && (
@@ -57,7 +79,7 @@ function MetricCard({
         </p>
       )}
       {seeAbove && (
-        <span className="mt-auto inline-flex items-center gap-1 pt-3 font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
+        <span className="mt-auto inline-flex items-center gap-1 pt-3 text-[9px] font-medium uppercase tracking-[0.12em] text-muted">
           <ArrowUpRight size={11} weight="bold" aria-hidden />
           Shown above
         </span>
@@ -133,9 +155,29 @@ export function ReportView({ convo, embedded = false }: { convo: Conversation; e
       {/* The 11 signals underneath */}
       <section className="mt-12 border-t border-line pt-10">
         <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted">The why</span>
-        <h2 className="mt-3 text-lg font-semibold tracking-tight text-foreground">
-          The 11 signals underneath — lenses, not grades.
-        </h2>
+        <div className="mt-3 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
+            The 11 signals underneath — lenses, not grades.
+          </h2>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-warn" aria-hidden />
+              Attention
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-positive" aria-hidden />
+              Healthy
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-muted" aria-hidden />
+              Neutral
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <LockSimple size={10} weight="bold" aria-hidden />
+              Not tracked
+            </span>
+          </div>
+        </div>
         <div className="mt-8 space-y-10">
           {pillarSkeleton.map((pillar) => (
             <div key={pillar.n}>
@@ -146,15 +188,18 @@ export function ReportView({ convo, embedded = false }: { convo: Conversation; e
                 <h3 className="text-base font-semibold tracking-tight text-foreground">{pillar.name}</h3>
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {pillar.metrics.map((m) => (
-                  <MetricCard
-                    key={m.name}
-                    name={m.name}
-                    phase={m.phase}
-                    seeAbove={m.seeAbove}
-                    metric={convo.metrics[m.name] ?? m.default}
-                  />
-                ))}
+                {pillar.metrics
+                  .map((m) => ({ m, state: convo.metrics[m.name] ?? m.default }))
+                  .sort((a, b) => toneRank(a.state) - toneRank(b.state))
+                  .map(({ m, state }) => (
+                    <MetricCard
+                      key={m.name}
+                      name={m.name}
+                      phase={m.phase}
+                      seeAbove={m.seeAbove}
+                      metric={state}
+                    />
+                  ))}
               </div>
             </div>
           ))}

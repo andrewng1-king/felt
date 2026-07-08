@@ -7,14 +7,17 @@ import {
   House,
   ChatsCircle,
   WarningDiamond,
+  WarningOctagon,
   Target,
   Gear,
   ArrowSquareOut,
   CaretUpDown,
   MagnifyingGlass,
+  Bell,
   Plus,
   CaretLeft,
   Command,
+  X,
 } from "@phosphor-icons/react/dist/ssr";
 import { Avatar } from "@/components/platform/bits";
 import { HomeView } from "@/components/platform/HomeView";
@@ -25,10 +28,11 @@ import { RiskTrendsView } from "@/components/platform/RiskTrendsView";
 import { SettingsView } from "@/components/platform/SettingsView";
 import { Modal } from "@/components/platform/Modal";
 import { NewConversationModal } from "@/components/platform/NewConversationModal";
+import { NotificationCenter } from "@/components/platform/NotificationCenter";
 import { CommandPalette } from "@/components/platform/CommandPalette";
 import { DemoWelcome } from "@/components/platform/DemoWelcome";
 import { PaletteSwitcher, type ThemeId } from "@/components/platform/PaletteSwitcher";
-import { andrew, conversations, reports, type ReportId } from "@/content/platform";
+import { andrew, conversations, reports, signals, type ReportId, type Signal } from "@/content/platform";
 
 type View = "home" | "prepare" | "conversations" | "report" | "risk" | "settings";
 
@@ -55,6 +59,9 @@ export function Shell() {
   const [theme, setTheme] = useState<ThemeId>("ember");
   const [newConvoOpen, setNewConvoOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifsSeen, setNotifsSeen] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   useEffect(() => {
     // Restore the demo palette from a prior visit. Done in an effect (not lazy
@@ -88,6 +95,17 @@ export function Shell() {
     setPrepPerson(id);
     setView("prepare");
   };
+  // One router for every signal action, shared by the bell, the Risk view, and Home.
+  const runSignal = (s: Signal) => {
+    const a = s.action;
+    if (!a) return;
+    if (a.view === "risk") setView("risk");
+    else if (a.view === "prepare") openPrepare(a.id as ReportId | undefined);
+    else if (a.view === "convo" && a.id) openConvo(a.id);
+    else if (a.view === "new") setNewConvoOpen(true);
+  };
+  const unreadCount = signals.filter((s) => s.unread).length;
+  const criticalSignal = signals.find((s) => s.severity === "critical");
   const activeNav = view === "report" ? "conversations" : view;
   const pageTitle =
     view === "report" && convo ? `1:1 with ${reports[convo.reportId].name}` : titles[activeNav];
@@ -205,6 +223,32 @@ export function Shell() {
           </div>
 
           <div className="ml-auto flex items-center gap-2">
+            {/* Notifications */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setNotifOpen((v) => !v);
+                  setNotifsSeen(true);
+                }}
+                aria-label={`Notifications${!notifsSeen && unreadCount ? `, ${unreadCount} unread` : ""}`}
+                className="relative inline-flex items-center rounded-lg border border-line bg-surface p-2 text-muted outline-none transition hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent/50"
+              >
+                <Bell size={16} weight={notifOpen ? "fill" : "regular"} />
+                {!notifsSeen && unreadCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold leading-none text-white ring-2 ring-background tabular-nums">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+              {notifOpen && (
+                <NotificationCenter
+                  onClose={() => setNotifOpen(false)}
+                  onSignal={runSignal}
+                  onViewAll={() => setView("risk")}
+                />
+              )}
+            </div>
             <button
               type="button"
               onClick={() => setPaletteOpen(true)}
@@ -235,6 +279,32 @@ export function Shell() {
           </span>
         </div>
 
+        {/* Critical banner — the one alert that follows you until you look at it */}
+        {criticalSignal && view !== "risk" && !bannerDismissed && (
+          <div className="flex items-center gap-2.5 border-b border-danger/30 bg-danger-soft px-5 py-2 sm:px-8">
+            <WarningOctagon size={15} weight="fill" className="shrink-0 text-danger" aria-hidden />
+            <p className="min-w-0 flex-1 truncate text-[13px] text-foreground">
+              <span className="font-medium">{criticalSignal.title}.</span>{" "}
+              <span className="text-ink-soft">{criticalSignal.detail}</span>
+            </p>
+            <button
+              type="button"
+              onClick={() => setView("risk")}
+              className="shrink-0 rounded-md border border-danger/40 px-2.5 py-1 text-xs font-medium text-danger outline-none transition hover:bg-danger/10 focus-visible:ring-2 focus-visible:ring-danger/50"
+            >
+              Review
+            </button>
+            <button
+              type="button"
+              onClick={() => setBannerDismissed(true)}
+              aria-label="Dismiss alert"
+              className="shrink-0 rounded p-1 text-danger/70 outline-none transition hover:text-danger focus-visible:ring-2 focus-visible:ring-danger/50"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+
         <div className="min-w-0 flex-1">
           <AnimatePresence mode="wait">
             <motion.div
@@ -249,13 +319,14 @@ export function Shell() {
                   onOpenConvo={openConvo}
                   onOpenRisk={() => setView("risk")}
                   onOpenPrepare={openPrepare}
+                  onSignal={runSignal}
                 />
               )}
               {view === "prepare" && <PrepareView initialPerson={prepPerson} />}
               {view === "conversations" && (
                 <ConversationsView onOpenConvo={openConvo} onOpenPrepare={openPrepare} />
               )}
-              {view === "risk" && <RiskTrendsView onOpenConvo={openConvo} />}
+              {view === "risk" && <RiskTrendsView onOpenConvo={openConvo} onSignal={runSignal} />}
               {view === "settings" && <SettingsView />}
               {view === "report" && convo && <ReportView convo={convo} />}
             </motion.div>
