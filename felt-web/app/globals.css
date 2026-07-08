@@ -40,22 +40,34 @@
 /* felt. app — the live demo (/app). Flat near-black, single warm-orange accent. */
 [data-theme="night"] {
   color-scheme: dark;
-  --background: #0a0a0b; /* near-black base */
-  --bg-alt: #0f0f11;     /* inset rows / subtle wells */
-  --surface: #141416;    /* raised cards */
-  --surface-2: #1b1b1e;  /* hover / nested surface */
-  --foreground: #f4f4f5;
-  --ink-soft: #b4b4bb;   /* secondary text (>=4.5:1 on base) */
-  --muted: #8a8a93;      /* tertiary / labels */
-  --line: #242629;       /* hairline borders */
-  --line-strong: #303034;
+  /* Warm near-black ramp. The neutrals carry a faint warmth so the charcoal
+     relates to the brand orange (and to the warm marketing site) instead of
+     reading as cold, generic blue-gray SaaS. The elevation ramp is widened so
+     raised cards clearly sit ABOVE the base rather than muddying into it. */
+  --background: #0b0a09; /* warm near-black base */
+  --bg-alt: #110f0d;     /* inset rows / subtle wells */
+  --surface: #1a1715;    /* raised cards — clearly lighter than base */
+  --surface-2: #242019;  /* hover / nested surface */
+  --foreground: #f6f4f1;
+  --ink-soft: #b7b2a9;   /* secondary text (>=4.5:1 on base) */
+  --muted: #8c877d;      /* tertiary / labels */
+  --line: #2b2721;       /* warm hairline borders */
+  --line-strong: #3a352d;
   --accent: #e8703a;         /* the one color: brand, interactive, attention */
   --accent-strong: #f2814d;  /* hover / brighter */
   --accent-soft: #2a1710;    /* opaque dark-orange tint for selected/alert wells */
   --highlight: #e8703a;
   --highlight-soft: #2a1710;
   --on-accent: #ffffff;  /* text/icons that sit ON an accent fill */
-  --ink-deep: #1b1b1e;   /* emphasis card base (flat, no glow) */
+  --ink-deep: #211d19;   /* emphasis card base */
+
+  /* Disciplined depth. Elevation = a widened surface ramp + a hairline top
+     highlight + a soft ambient shadow — physical, not the decorative glow that
+     was rejected. Applied through the .felt-card utility below. */
+  --card-highlight: rgba(255, 255, 255, 0.05);
+  --card-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0) 42%);
+  --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.45), 0 14px 34px -22px rgba(0, 0, 0, 0.85);
+  --shadow-pop: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 22px 48px -24px rgba(0, 0, 0, 0.9);
 
   /* Semantic status scale (dark). Orange stays the BRAND accent; these carry
      STATUS only, so severity is never guessed from one hue. -400-level values
@@ -121,6 +133,11 @@
   --app-sans: var(--font-switzer), system-ui, sans-serif;
   --app-serif: var(--font-switzer), system-ui, sans-serif;
   --app-mono: var(--font-switzer), ui-monospace, monospace;
+  /* Depth for the light app theme — a soft ambient shadow, no white sheen. */
+  --card-highlight: rgba(255, 255, 255, 0.7);
+  --card-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 40%);
+  --shadow-card: 0 1px 2px 0 rgba(26, 23, 18, 0.05), 0 12px 28px -20px rgba(26, 23, 18, 0.25);
+  --shadow-pop: 0 2px 6px 0 rgba(26, 23, 18, 0.08), 0 20px 44px -22px rgba(26, 23, 18, 0.32);
 }
 [data-theme="light"] .glass {
   background: var(--surface);
@@ -217,6 +234,40 @@ body {
   background: var(--surface-2);
   border: 1px solid var(--line);
   box-shadow: none;
+}
+
+/* Raised panel — the app's disciplined-depth card. A surface fill + a hairline
+   border + a 1px inner top highlight + a faint top-down sheen + a soft ambient
+   shadow, so the card reads as a physical object above the base. Replaces the
+   bare `border border-line bg-surface` pattern in /app. Set radius separately
+   (e.g. rounded-2xl). */
+.felt-card {
+  background-image: var(--card-sheen);
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 0 var(--card-highlight), var(--shadow-card);
+}
+/* Interactive panels lift a touch more on hover (pair with a hover:-translate). */
+.felt-card-pop {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.felt-card-pop:hover {
+  border-color: var(--line-strong);
+  box-shadow: inset 0 1px 0 0 var(--card-highlight), var(--shadow-pop);
+}
+
+/* Mirror stage — the cinematic frame for the Empathy Mirror (the signature
+   moment). A raised panel with a soft accent "stage light" glowing down from
+   the top, so the temperature-colored emotional line reads as the centerpiece.
+   The glow is a faint mix of the brand accent — disciplined, not decorative. */
+.mirror-stage {
+  position: relative;
+  background-image:
+    radial-gradient(120% 90% at 50% -20%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 62%),
+    var(--card-sheen);
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 0 var(--card-highlight), var(--shadow-pop);
 }
 
 @media (prefers-reduced-transparency: reduce) {

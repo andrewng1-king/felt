@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AnimatePresence,
   animate,
@@ -90,7 +90,10 @@ function yAtX(path: SVGPathElement, x: number): number {
 /** felt score (0-100) from a plotted y: top = open = 100, bottom = guarded = 0. */
 const feltFromY = (y: number) => ((Y_GUARD - y) / (Y_GUARD - Y_OPEN)) * 100;
 
-export function EmpathyMirror({ data = empathyMirror as MirrorData }: { data?: MirrorData } = {}) {
+export function EmpathyMirror({
+  data = empathyMirror as MirrorData,
+  autoPlay = false,
+}: { data?: MirrorData; autoPlay?: boolean } = {}) {
   const reduce = useReducedMotion();
 
   const { opennessLine, voiceArea, defaultMoment } = useMemo(() => {
@@ -185,6 +188,18 @@ export function EmpathyMirror({ data = empathyMirror as MirrorData }: { data?: M
     driveTo(x);
     if (!hovering) setHovering(true);
   }
+
+  // The signature moment: when asked to (e.g. opening a 1:1 report), let the line
+  // draw itself in, then sweep the playhead across the whole conversation once.
+  // Opt-in so the marketing shot stays hover-only; skipped under reduced motion.
+  const didAuto = useRef(false);
+  useEffect(() => {
+    if (!autoPlay || reduce || didAuto.current) return;
+    didAuto.current = true;
+    const id = setTimeout(() => play(), 1700); // after the line finishes drawing
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoPlay, reduce]);
 
   return (
     <div>

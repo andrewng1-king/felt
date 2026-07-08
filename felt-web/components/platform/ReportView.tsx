@@ -140,15 +140,21 @@ export function ReportView({ convo, embedded = false }: { convo: Conversation; e
         </div>
       </div>
 
-      {/* Empathy Mirror — the evidence, one section down */}
+      {/* Empathy Mirror — the signature moment. Framed as a stage: on open, the
+          emotional line draws itself, then the playhead sweeps the whole 1:1. */}
       <section className="mt-12 border-t border-line pt-10">
-        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted">The evidence</span>
-        <h2 className="mt-3 text-lg font-semibold tracking-tight text-foreground">
-          How {report.pronoun} moved, second by second.
+        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
+          The evidence
+        </span>
+        <h2 className="mt-3 max-w-xl text-2xl font-semibold leading-tight tracking-[-0.01em] text-foreground sm:text-[28px]">
+          Watch how {report.pronoun} felt — second by second.
         </h2>
-        <div className="glass mt-6 rounded-2xl p-5 sm:p-8">
+        <p className="mt-2 max-w-lg text-sm leading-relaxed text-ink-soft">
+          One line for the whole conversation: warm where {report.pronoun} opened up, cool where {report.pronoun} pulled back. Press play, or scrub it yourself.
+        </p>
+        <div className="mirror-stage mt-6 rounded-3xl p-5 sm:p-9">
           {/* key forces a fresh chart when switching conversations */}
-          <EmpathyMirror key={convo.id} data={convo.mirror} />
+          <EmpathyMirror key={convo.id} data={convo.mirror} autoPlay />
         </div>
       </section>
 

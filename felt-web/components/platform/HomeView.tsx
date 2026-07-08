@@ -47,10 +47,16 @@ export function HomeView({
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-7 sm:px-8 sm:py-8">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-sm text-ink-soft">
-          Good afternoon, <span className="font-medium text-foreground">{andrew.name}</span>
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[13px] text-muted">
+            Good afternoon, <span className="text-ink-soft">{andrew.name}</span>
+          </p>
+          <h1 className="mt-1.5 max-w-xl text-[26px] font-semibold leading-[1.12] tracking-[-0.02em] text-foreground sm:text-[30px]">
+            {kpis.sessions} conversations this month — and{" "}
+            <span className="text-accent">one</span> relationship that needs you.
+          </h1>
+        </div>
         <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
           {activity.rangeLabel}
         </span>
@@ -72,7 +78,7 @@ export function HomeView({
       <div className="mt-6 grid gap-5 lg:grid-cols-3">
         <div className="space-y-5 lg:col-span-2">
           {/* Cadence */}
-          <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+          <section className="felt-card rounded-2xl p-5 sm:p-6">
             <SectionHeader
               title="Your cadence"
               action={
@@ -90,7 +96,7 @@ export function HomeView({
           </section>
 
           {/* Recent conversations */}
-          <section className="rounded-2xl border border-line bg-surface">
+          <section className="felt-card rounded-2xl">
             <div className="px-5 pt-5 sm:px-6">
               <SectionHeader title="Recent conversations" />
             </div>
@@ -156,7 +162,7 @@ export function HomeView({
             <button
               type="button"
               onClick={() => onOpenPrepare(prepId)}
-              className="group flex w-full flex-col rounded-2xl border border-line bg-surface p-5 text-left outline-none transition hover:-translate-y-0.5 hover:border-line-strong focus-visible:ring-2 focus-visible:ring-accent/50"
+              className="felt-card felt-card-pop group flex w-full flex-col rounded-2xl p-5 text-left outline-none transition hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-accent/50"
             >
               <div className="flex items-center gap-2">
                 <Target size={16} weight="fill" className="text-accent" />
