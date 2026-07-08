@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AnimatedNumber } from "@/components/platform/AnimatedNumber";
 
 /** A flat KPI tile — hairline border, one surface, tabular value. The glance layer. */
 export function StatTile({
@@ -23,7 +24,7 @@ export function StatTile({
             accent ? "text-accent" : "text-foreground"
           }`}
         >
-          {value}
+          {typeof value === "number" ? <AnimatedNumber value={value} /> : value}
         </span>
         {unit && <span className="text-sm font-medium text-muted">{unit}</span>}
       </p>

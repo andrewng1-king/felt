@@ -8,11 +8,13 @@ import {
   ChatsCircle,
   WarningDiamond,
   Target,
+  Gear,
   ArrowSquareOut,
   CaretUpDown,
   MagnifyingGlass,
   Plus,
   CaretLeft,
+  Command,
 } from "@phosphor-icons/react/dist/ssr";
 import { Avatar } from "@/components/platform/bits";
 import { HomeView } from "@/components/platform/HomeView";
@@ -20,12 +22,17 @@ import { PrepareView } from "@/components/platform/PrepareView";
 import { ConversationsView } from "@/components/platform/ConversationsView";
 import { ReportView } from "@/components/platform/ReportView";
 import { RiskTrendsView } from "@/components/platform/RiskTrendsView";
+import { SettingsView } from "@/components/platform/SettingsView";
+import { Modal } from "@/components/platform/Modal";
+import { NewConversationModal } from "@/components/platform/NewConversationModal";
+import { CommandPalette } from "@/components/platform/CommandPalette";
+import { DemoWelcome } from "@/components/platform/DemoWelcome";
 import { PaletteSwitcher, type ThemeId } from "@/components/platform/PaletteSwitcher";
 import { andrew, conversations, reports, type ReportId } from "@/content/platform";
 
-type View = "home" | "prepare" | "conversations" | "report" | "risk";
+type View = "home" | "prepare" | "conversations" | "report" | "risk" | "settings";
 
-const nav: { id: Exclude<View, "report">; label: string; Icon: typeof House }[] = [
+const nav: { id: "home" | "prepare" | "conversations" | "risk"; label: string; Icon: typeof House }[] = [
   { id: "home", label: "Overview", Icon: House },
   { id: "prepare", label: "Prepare", Icon: Target },
   { id: "conversations", label: "Conversations", Icon: ChatsCircle },
@@ -37,6 +44,7 @@ const titles: Record<Exclude<View, "report">, string> = {
   prepare: "Prepare",
   conversations: "Conversations",
   risk: "Risk & Trends",
+  settings: "Settings",
 };
 
 export function Shell() {
@@ -45,6 +53,8 @@ export function Shell() {
   const [convoId, setConvoId] = useState<string | null>(null);
   const [prepPerson, setPrepPerson] = useState<ReportId | undefined>(undefined);
   const [theme, setTheme] = useState<ThemeId>("ember");
+  const [newConvoOpen, setNewConvoOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
 
   useEffect(() => {
     // Restore the demo palette from a prior visit. Done in an effect (not lazy
@@ -56,6 +66,18 @@ export function Shell() {
   useEffect(() => {
     localStorage.setItem("felt-theme", theme);
   }, [theme]);
+
+  // ⌘K / Ctrl+K opens the command palette from anywhere.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const convo = conversations.find((c) => c.id === convoId) ?? null;
   const openConvo = (id: string) => {
@@ -132,8 +154,22 @@ export function Shell() {
         </div>
         {navList}
 
-        {/* User + back to site */}
+        {/* User + settings + back to site */}
         <div className="flex items-center gap-2 md:mt-auto md:flex-col md:items-stretch md:gap-1">
+          <button
+            type="button"
+            onClick={() => setView("settings")}
+            aria-current={view === "settings" ? "page" : undefined}
+            className={[
+              "hidden items-center gap-2 rounded-lg px-3 py-2 text-xs outline-none transition focus-visible:ring-2 focus-visible:ring-accent/50 md:flex",
+              view === "settings"
+                ? "bg-surface font-medium text-foreground"
+                : "text-muted hover:bg-surface/60 hover:text-foreground",
+            ].join(" ")}
+          >
+            <Gear size={14} weight={view === "settings" ? "fill" : "regular"} className={view === "settings" ? "text-accent" : ""} />
+            Settings
+          </button>
           <Link
             href="/"
             className="hidden items-center gap-2 rounded-lg px-3 py-2 text-xs text-muted outline-none transition hover:bg-surface/60 hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent/50 md:flex"
@@ -169,16 +205,21 @@ export function Shell() {
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <label className="hidden items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm text-muted sm:flex">
-              <MagnifyingGlass size={15} />
-              <input
-                type="text"
-                placeholder="Search 1:1s…"
-                className="w-28 bg-transparent text-foreground placeholder:text-muted focus:outline-none lg:w-40"
-              />
-            </label>
             <button
               type="button"
+              onClick={() => setPaletteOpen(true)}
+              aria-label="Search — open command palette"
+              className="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-sm text-muted outline-none transition hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent/50"
+            >
+              <MagnifyingGlass size={15} />
+              <span className="hidden sm:inline">Search…</span>
+              <kbd className="hidden items-center gap-0.5 rounded border border-line px-1 py-0.5 text-[10px] leading-none text-muted sm:inline-flex">
+                <Command size={10} weight="bold" /> K
+              </kbd>
+            </button>
+            <button
+              type="button"
+              onClick={() => setNewConvoOpen(true)}
               className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-[color:var(--on-accent)] outline-none transition hover:bg-accent-strong focus-visible:ring-2 focus-visible:ring-accent/50"
             >
               <Plus size={15} weight="bold" /> <span className="hidden sm:inline">New 1:1</span>
@@ -215,12 +256,36 @@ export function Shell() {
                 <ConversationsView onOpenConvo={openConvo} onOpenPrepare={openPrepare} />
               )}
               {view === "risk" && <RiskTrendsView onOpenConvo={openConvo} />}
+              {view === "settings" && <SettingsView />}
               {view === "report" && convo && <ReportView convo={convo} />}
             </motion.div>
           </AnimatePresence>
         </div>
       </main>
 
+      {/* New 1:1 flow */}
+      <Modal open={newConvoOpen} onClose={() => setNewConvoOpen(false)} labelledBy="new-convo-title">
+        <NewConversationModal
+          onClose={() => setNewConvoOpen(false)}
+          onOpenConvo={(id) => {
+            setNewConvoOpen(false);
+            openConvo(id);
+          }}
+        />
+      </Modal>
+
+      {/* ⌘K command palette */}
+      {paletteOpen && (
+        <CommandPalette
+          onClose={() => setPaletteOpen(false)}
+          onNavigate={(v) => setView(v)}
+          onOpenConvo={openConvo}
+          onOpenPrepare={openPrepare}
+          onNewConvo={() => setNewConvoOpen(true)}
+        />
+      )}
+
+      <DemoWelcome onOpenPalette={() => setPaletteOpen(true)} />
       <PaletteSwitcher value={theme} onChange={setTheme} />
     </div>
   );

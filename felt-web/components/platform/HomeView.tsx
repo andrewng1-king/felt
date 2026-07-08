@@ -1,3 +1,6 @@
+"use client";
+
+import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight, WarningDiamond, CalendarBlank, Clock, Target } from "@phosphor-icons/react/dist/ssr";
 import { Avatar, DirectionBadge } from "@/components/platform/bits";
 import { StatTile, SectionHeader, WeekBars } from "@/components/platform/ui";
@@ -21,6 +24,7 @@ export function HomeView({
   onOpenRisk: () => void;
   onOpenPrepare: (id?: ReportId) => void;
 }) {
+  const reduce = useReducedMotion();
   const recent = recentActivity.map((id) => conversations.find((c) => c.id === id)!);
   const overdue = activity.roster.filter((r) => r.overdue);
   const { kpis } = activity;
@@ -80,14 +84,17 @@ export function HomeView({
               <SectionHeader title="Recent conversations" />
             </div>
             <div className="mt-3 divide-y divide-line">
-              {recent.map((c) => {
+              {recent.map((c, i) => {
                 const r = reports[c.reportId];
                 return (
-                  <button
+                  <motion.button
                     key={c.id}
                     type="button"
                     onClick={() => onOpenConvo(c.id)}
-                    className="group flex w-full items-center gap-3 px-5 py-3.5 text-left outline-none transition hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50 sm:px-6"
+                    initial={reduce ? false : { opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: reduce ? 0 : i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                    className="group flex w-full items-center gap-3 px-5 py-3.5 text-left outline-none transition-colors hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50 sm:px-6"
                   >
                     <Avatar initials={r.initials} />
                     <div className="min-w-0 flex-1">
@@ -104,7 +111,7 @@ export function HomeView({
                       size={15}
                       className="hidden shrink-0 text-muted transition group-hover:translate-x-0.5 group-hover:text-foreground sm:block"
                     />
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
@@ -117,7 +124,7 @@ export function HomeView({
           <button
             type="button"
             onClick={onOpenRisk}
-            className="group flex w-full flex-col rounded-2xl border border-accent/40 bg-accent-soft p-5 text-left outline-none transition hover:border-accent/70 focus-visible:ring-2 focus-visible:ring-accent/50"
+            className="group flex w-full flex-col rounded-2xl border border-accent/40 bg-accent-soft p-5 text-left outline-none transition hover:-translate-y-0.5 hover:border-accent/70 focus-visible:ring-2 focus-visible:ring-accent/50"
           >
             <div className="flex items-center gap-2">
               <WarningDiamond size={16} weight="fill" className="text-accent" />
@@ -137,7 +144,7 @@ export function HomeView({
             <button
               type="button"
               onClick={() => onOpenPrepare(prepId)}
-              className="group flex w-full flex-col rounded-2xl border border-line bg-surface p-5 text-left outline-none transition hover:border-line-strong focus-visible:ring-2 focus-visible:ring-accent/50"
+              className="group flex w-full flex-col rounded-2xl border border-line bg-surface p-5 text-left outline-none transition hover:-translate-y-0.5 hover:border-line-strong focus-visible:ring-2 focus-visible:ring-accent/50"
             >
               <div className="flex items-center gap-2">
                 <Target size={16} weight="fill" className="text-accent" />

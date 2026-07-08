@@ -1,5 +1,5 @@
 import { Reveal } from "@/components/ui/Reveal";
-import { quote } from "@/content/site";
+import { quote, quoteSecondary } from "@/content/site";
 
 export function Quote() {
   return (
@@ -13,6 +13,19 @@ export function Quote() {
           <div className="text-sm">
             <span className="font-medium text-foreground">{quote.name}</span>
             <span className="text-muted">, {quote.role}</span>
+          </div>
+        </div>
+      </Reveal>
+
+      <Reveal delay={0.08} className="mx-auto mt-16 max-w-4xl border-t border-line pt-12">
+        <blockquote className="max-w-2xl text-lg leading-relaxed text-ink-soft sm:text-xl">
+          &ldquo;{quoteSecondary.body}&rdquo;
+        </blockquote>
+        <div className="mt-6 flex items-center gap-4">
+          <span className="h-px w-10 bg-line" aria-hidden />
+          <div className="text-sm">
+            <span className="font-medium text-foreground">{quoteSecondary.name}</span>
+            <span className="text-muted">, {quoteSecondary.role}</span>
           </div>
         </div>
       </Reveal>

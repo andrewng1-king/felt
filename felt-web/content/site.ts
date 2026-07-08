@@ -165,6 +165,21 @@ export const quote = {
   role: "VP People, Halden Robotics",
 } as const;
 
+export const quoteSecondary = {
+  body: "The first time it told me someone left a 1:1 more guarded than they came in, I'd have sworn it went fine. It didn't. I'd been coasting on my own read for years.",
+  name: "Devin Alcott",
+  role: "Director of Engineering, Northwind",
+} as const;
+
+/**
+ * Light trust band. Design-partner names are illustrative — consistent with the
+ * fictional testimonials above — not claimed customer logos.
+ */
+export const trust = {
+  line: "In pilot with design-partner teams at",
+  partners: ["Halden Robotics", "Northwind", "Cabot & Reyes", "Lumen Health", "Vireo Labs"],
+} as const;
+
 export const differentiators = {
   heading: "Every other tool grades you. felt. reads them.",
   body: "Kona, 15Five, and Gong all tell you how you performed. felt. tells you how they felt. Different product, different category.",
