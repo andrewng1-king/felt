@@ -154,7 +154,7 @@ export function ConversationsView({
         </aside>
 
         {/* Detail: selected person */}
-        <section className="min-w-0 rounded-2xl border border-line bg-surface">
+        <section className="felt-card min-w-0 rounded-2xl">
           {/* Person header + session switcher */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-3.5 sm:px-6">
             <div className="flex items-center gap-2.5">

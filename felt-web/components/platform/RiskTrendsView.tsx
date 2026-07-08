@@ -55,8 +55,9 @@ export function RiskTrendsView({
         <SeveritySummary counts={counts} />
       </div>
 
-      {/* Hero alert — the one thing that matters most, in danger red */}
-      <section className={`mt-6 rounded-2xl border border-l-2 p-6 sm:p-7 ${crit.well} ${crit.edge}`}>
+      {/* Hero alert — the one thing that matters most, in danger red. Lifted with
+          the pop shadow so the critical signal reads as elevated/urgent. */}
+      <section className={`mt-6 rounded-2xl border border-l-2 p-6 shadow-[var(--shadow-pop)] sm:p-7 ${crit.well} ${crit.edge}`}>
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             <Avatar initials={alertReport.initials} size="lg" />
@@ -135,7 +136,7 @@ export function RiskTrendsView({
             const t = reportTrends[id];
             const tl = trendLabel[t.dir];
             return (
-              <div key={id} className="rounded-xl border border-line bg-surface p-4">
+              <div key={id} className="felt-card rounded-xl p-4">
                 <div className="flex items-center gap-2.5">
                   <Avatar initials={reports[id].initials} size="sm" />
                   <div className="min-w-0">

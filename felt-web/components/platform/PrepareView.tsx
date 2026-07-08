@@ -90,7 +90,7 @@ export function PrepareView({ initialPerson }: { initialPerson?: ReportId }) {
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         {/* Focus Brief */}
         <section className="space-y-5">
-          <div className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+          <div className="felt-card rounded-2xl p-5 sm:p-6">
             <div className="flex items-center gap-2.5">
               <Target size={17} weight="fill" className="text-accent" />
               <h2 className="text-[15px] font-semibold tracking-tight text-foreground">Focus Brief</h2>
@@ -116,7 +116,7 @@ export function PrepareView({ initialPerson }: { initialPerson?: ReportId }) {
           </div>
 
           {/* Suggested phrasing */}
-          <div className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+          <div className="felt-card rounded-2xl p-5 sm:p-6">
             <h3 className="text-[13px] font-semibold tracking-tight text-foreground">Try this opener</h3>
             <p className="mt-3 flex items-start gap-2.5 rounded-xl bg-accent-soft/60 p-3.5 text-sm leading-relaxed text-foreground">
               <Check size={15} weight="bold" className="mt-0.5 shrink-0 text-accent-strong" />
@@ -130,7 +130,7 @@ export function PrepareView({ initialPerson }: { initialPerson?: ReportId }) {
         </section>
 
         {/* Rehearsal */}
-        <section className="rounded-2xl border border-line bg-surface">
+        <section className="felt-card rounded-2xl">
           <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-3.5 sm:px-6">
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent-soft">
