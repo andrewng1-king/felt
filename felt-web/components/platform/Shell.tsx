@@ -11,12 +11,13 @@ import {
   Target,
   Gear,
   ArrowSquareOut,
-  CaretUpDown,
   MagnifyingGlass,
   Bell,
   Plus,
   CaretLeft,
   Command,
+  Moon,
+  Sun,
   X,
 } from "@phosphor-icons/react/dist/ssr";
 import { Avatar } from "@/components/platform/bits";
@@ -112,14 +113,6 @@ export function Shell() {
   const pageTitle =
     view === "report" && convo ? `1:1 with ${reports[convo.reportId].name}` : titles[activeNav];
 
-  const wordmark = (
-    <svg width="26" height="14" viewBox="0 0 42 22" fill="none" aria-hidden className="text-foreground">
-      <path d="M3 11 Q 9 4, 15 11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M15 11 Q 21 18, 27 11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.5" />
-      <path d="M27 11 Q 33 4, 39 11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.2" />
-    </svg>
-  );
-
   const navList = (
     <nav className="flex items-center gap-1 md:flex-col md:items-stretch md:gap-0.5">
       {nav.map(({ id, label, Icon }) => {
@@ -156,17 +149,16 @@ export function Shell() {
     >
       {/* Sidebar (desktop) / top strip (mobile) */}
       <aside className="sticky top-0 z-40 flex shrink-0 items-center justify-between gap-3 border-b border-line bg-background px-4 py-2.5 md:h-screen md:w-60 md:flex-col md:items-stretch md:justify-start md:border-b-0 md:border-r md:px-3 md:py-4">
-        {/* Workspace switcher */}
+        {/* Brand wordmark */}
         <button
           type="button"
-          className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-left outline-none transition hover:bg-surface/60 focus-visible:ring-2 focus-visible:ring-accent/50 md:mb-6"
+          onClick={() => setView("home")}
+          aria-label="felt. — Overview"
+          className="flex items-center rounded-lg px-2 py-1.5 text-left outline-none transition hover:opacity-80 focus-visible:ring-2 focus-visible:ring-accent/50 md:mb-6"
         >
-          {wordmark}
-          <span className="hidden min-w-0 leading-tight md:block">
-            <span className="block truncate text-sm font-semibold text-foreground">{andrew.org}</span>
-            <span className="block truncate text-[11px] text-muted">Workspace</span>
+          <span className="text-[20px] font-semibold tracking-[-0.03em] text-foreground">
+            felt<span className="text-accent">.</span>
           </span>
-          <CaretUpDown size={14} className="hidden shrink-0 text-muted md:block" />
         </button>
 
         <div className="hidden px-2 pb-2 md:block">
@@ -262,6 +254,14 @@ export function Shell() {
               <kbd className="hidden items-center gap-0.5 rounded border border-line px-1 py-0.5 text-[10px] leading-none text-muted sm:inline-flex">
                 <Command size={10} weight="bold" /> K
               </kbd>
+            </button>
+            <button
+              type="button"
+              onClick={() => setTheme(theme === "light" ? "ember" : "light")}
+              aria-label={theme === "light" ? "Switch to dark" : "Switch to light"}
+              className="inline-flex items-center rounded-lg border border-line bg-surface p-2 text-muted outline-none transition hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent/50"
+            >
+              {theme === "light" ? <Moon size={16} /> : <Sun size={16} weight="fill" />}
             </button>
             <button
               type="button"

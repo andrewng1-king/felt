@@ -81,15 +81,24 @@ export function countBySeverity(list: Signal[]): Partial<Record<Severity, number
 
 /** Vercel-style status glyph — a filled dot inside a soft same-color halo.
     The calm replacement for the bare colored dot; pairs with a short label. */
-export function StatusIcon({ severity, className }: { severity: Severity; className?: string }) {
+export function StatusIcon({
+  severity,
+  size = 16,
+  className,
+}: {
+  severity: Severity;
+  size?: number;
+  className?: string;
+}) {
   const m = severityMeta[severity];
   return (
     <span
-      className={cn("relative inline-flex h-4 w-4 shrink-0 items-center justify-center", className)}
+      className={cn("relative inline-flex shrink-0 items-center justify-center", className)}
+      style={{ width: size, height: size }}
       aria-hidden
     >
       <span className={cn("absolute inset-0 rounded-full opacity-20", m.dot)} />
-      <span className={cn("h-2 w-2 rounded-full", m.dot)} />
+      <span className={cn("rounded-full", m.dot)} style={{ width: size * 0.5, height: size * 0.5 }} />
     </span>
   );
 }
@@ -133,7 +142,7 @@ export function SeveritySummary({
                 m.pill,
               )}
             >
-              <span className={cn("h-1.5 w-1.5 rounded-full", m.dot)} aria-hidden />
+              <StatusIcon severity={s} size={13} />
               {counts[s]} {m.label}
             </span>
           );
