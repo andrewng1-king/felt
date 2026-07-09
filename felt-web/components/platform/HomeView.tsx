@@ -2,15 +2,14 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight, CalendarBlank } from "@phosphor-icons/react/dist/ssr";
-import { Avatar, DirectionPill, Sparkline } from "@/components/platform/bits";
+import { Avatar, DirectionPill } from "@/components/platform/bits";
 import { SectionHeader, DeltaChip, InfoTip } from "@/components/platform/ui";
 import { TeamHealthBars, StatusRing, EmpathyArc } from "@/components/platform/charts";
 import { AnimatedNumber } from "@/components/platform/AnimatedNumber";
 import {
   StatusIcon,
-  severityMeta,
   countBySeverity,
-  bySeverity,
+  SignalsPanel,
 } from "@/components/platform/severity";
 import {
   andrew,
@@ -57,8 +56,8 @@ export function HomeView({
     activity.roster.filter((r) => r.reportId).map((r) => [r.reportId, r.team]),
   ) as Record<ReportId, Team>;
 
-  // Needs-attention queue: everything that isn't good news, most-severe first.
-  const attention = signals.filter((s) => s.severity !== "positive").sort(bySeverity);
+  // Needs-attention queue: everything that isn't good news (SignalsPanel groups + ranks).
+  const attention = signals.filter((s) => s.severity !== "positive");
   const riskMix = countBySeverity(signals);
   const currentPct = Math.round(teamHealth[teamHealth.length - 1].value * 100);
   // Every conversation's emotional line, already on a normalized 0→1 timeline.
@@ -284,30 +283,15 @@ export function HomeView({
                 </button>
               }
             />
-            {/* rows */}
-            <div className="mt-2">
-            {attention.map((s) => {
-              const meta = severityMeta[s.severity];
-              const trend = s.reportId ? reportTrends[s.reportId] : undefined;
-              return (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => onSignal(s)}
-                  className="group flex w-full items-center gap-3 rounded-lg border-line px-2 py-3 text-left outline-none transition-colors [&:not(:first-child)]:border-t hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50"
-                >
-                  <StatusIcon severity={s.severity} />
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-foreground">{s.name}</div>
-                    <div className="mt-0.5 truncate text-xs text-muted">
-                      <span className={cn("font-medium", meta.text)}>{meta.label}</span> · {s.detail}
-                    </div>
-                  </div>
-                  {trend && <Sparkline points={trend.points} direction={trend.dir} />}
-                </button>
-              );
-            })}
-            </div>
+            <SignalsPanel
+              items={attention}
+              onSignal={onSignal}
+              compact
+              className="mt-3"
+              getTrend={(s) =>
+                s.reportId ? { points: reportTrends[s.reportId].points, dir: reportTrends[s.reportId].dir } : undefined
+              }
+            />
           </div>
 
           {/* Prepare */}

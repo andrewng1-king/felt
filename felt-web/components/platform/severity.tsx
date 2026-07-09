@@ -9,9 +9,11 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 
 type IconCmp = typeof WarningOctagon;
-import { Avatar } from "@/components/platform/bits";
-import type { Severity, Signal } from "@/content/platform";
+import { Sparkline } from "@/components/platform/bits";
+import type { Direction, Severity, Signal } from "@/content/platform";
 import { cn } from "@/lib/utils";
+
+export type SignalTrend = { points: number[]; dir: Direction };
 
 /**
  * The status design-system. One severity → one icon, one color token, one label.
@@ -152,26 +154,41 @@ export function SeveritySummary({
 }
 
 /**
- * One alert anatomy, reused everywhere: colored left edge + severity icon +
- * title + why + when. Optional avatar and action. Clickable as a whole row.
+ * One signal row, reused everywhere through SignalsPanel. Icon + title + why +
+ * when, on a NEUTRAL card — no colored stripe. Severity reads from the group
+ * header + the status icon; only a Critical row carries a faint color accent, so
+ * nothing else shouts. Optional trend sparkline (Home). Clickable as a whole row.
  */
-export function SignalRow({ signal, onClick }: { signal: Signal; onClick?: () => void }) {
+export function SignalRow({
+  signal,
+  onClick,
+  trend,
+  compact = false,
+}: {
+  signal: Signal;
+  onClick?: () => void;
+  trend?: SignalTrend;
+  compact?: boolean;
+}) {
   const m = severityMeta[signal.severity];
+  const critical = signal.severity === "critical";
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        "group flex w-full items-start gap-3 rounded-xl border border-line border-l-2 bg-surface p-3.5 text-left outline-none transition",
-        m.edge,
-        "hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-accent/50",
+        "group flex w-full items-start gap-3 rounded-xl border text-left outline-none transition focus-visible:ring-2 focus-visible:ring-accent/50",
+        compact ? "p-3" : "p-3.5",
+        critical
+          ? "border-danger/25 bg-danger-soft/50 hover:bg-danger-soft"
+          : "border-line bg-surface hover:bg-surface-2",
       )}
     >
-      <Avatar initials={signal.initials} size="sm" />
+      <StatusIcon severity={signal.severity} size={compact ? 15 : 17} className="mt-0.5" />
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <m.Icon size={14} weight="fill" className={cn("shrink-0", m.text)} aria-hidden />
-          <span className="truncate text-sm font-medium text-foreground">{signal.title}</span>
+        <div className="flex items-baseline gap-2">
+          <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{signal.title}</span>
+          <span className="shrink-0 text-[11px] tabular-nums text-muted">{signal.when}</span>
         </div>
         <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-soft">{signal.detail}</p>
         {signal.action && (
@@ -181,10 +198,73 @@ export function SignalRow({ signal, onClick }: { signal: Signal; onClick?: () =>
           </span>
         )}
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-1.5">
-        <span className="text-[11px] tabular-nums text-muted">{signal.when}</span>
-        {signal.unread && <span className={cn("h-1.5 w-1.5 rounded-full", m.dot)} aria-hidden />}
-      </div>
+      {trend && (
+        <span className="mt-0.5 shrink-0">
+          <Sparkline points={trend.points} direction={trend.dir} />
+        </span>
+      )}
     </button>
+  );
+}
+
+/** Small section header inside SignalsPanel — colored severity word + count. */
+function SignalGroupHeader({ severity, count }: { severity: Severity; count: number }) {
+  const m = severityMeta[severity];
+  return (
+    <div className="flex items-center gap-2 px-1">
+      <span className={cn("text-[11px] font-semibold uppercase tracking-[0.07em]", m.text)}>{m.label}</span>
+      <span className="font-mono text-[11px] tabular-nums text-muted">{count}</span>
+    </div>
+  );
+}
+
+const panelOrder: Severity[] = ["critical", "warning", "watch", "positive"];
+
+/**
+ * THE Signals module — one glance summary (optional) over a severity-grouped list.
+ * Reused on Home (needs-attention), Risk & Trends, and Notifications so the signal
+ * feed reads identically everywhere. Critical leads by position + a faint accent.
+ */
+export function SignalsPanel({
+  items,
+  onSignal,
+  showSummary = false,
+  compact = false,
+  getTrend,
+  className,
+}: {
+  items: Signal[];
+  onSignal: (s: Signal) => void;
+  showSummary?: boolean;
+  compact?: boolean;
+  getTrend?: (s: Signal) => SignalTrend | undefined;
+  className?: string;
+}) {
+  const groups = panelOrder
+    .map((severity) => ({ severity, list: items.filter((s) => s.severity === severity) }))
+    .filter((g) => g.list.length > 0);
+
+  return (
+    <div className={className}>
+      {showSummary && <SeveritySummary counts={countBySeverity(items)} className="mb-4" />}
+      <div className="space-y-4">
+        {groups.map((g) => (
+          <div key={g.severity} className="space-y-1.5">
+            <SignalGroupHeader severity={g.severity} count={g.list.length} />
+            <div className="space-y-2">
+              {g.list.map((s) => (
+                <SignalRow
+                  key={s.id}
+                  signal={s}
+                  onClick={() => onSignal(s)}
+                  trend={getTrend?.(s)}
+                  compact={compact}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

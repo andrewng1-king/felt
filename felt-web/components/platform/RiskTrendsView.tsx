@@ -6,11 +6,10 @@ import {
 import { Avatar } from "@/components/platform/bits";
 import { StatusRing, TrendLine } from "@/components/platform/charts";
 import {
-  SignalRow,
+  SignalsPanel,
   StatusPill,
   StatusIcon,
   countBySeverity,
-  bySeverity,
 } from "@/components/platform/severity";
 import {
   reports,
@@ -47,7 +46,8 @@ export function RiskTrendsView({
   const alertReport = reports[riskView.alert.reportId];
   const latestDaniel = [...conversations].reverse().find((c) => c.reportId === "daniel");
   const counts = countBySeverity(signals);
-  const ranked = signals.filter((s) => s.severity !== "critical").sort(bySeverity);
+  // Critical is the hero card above; the panel groups + ranks everything else.
+  const ranked = signals.filter((s) => s.severity !== "critical");
   const legendOrder: Severity[] = ["critical", "warning", "watch", "positive"];
 
   return (
@@ -78,8 +78,8 @@ export function RiskTrendsView({
           </div>
         </section>
 
-        {/* Critical alert — calm: white card, red left edge (no big pink block) */}
-        <section className="rounded-2xl border border-line border-l-2 border-l-danger bg-surface p-6 shadow-[var(--shadow-card)] sm:p-7">
+        {/* Critical alert — calm: white card, faint danger border (the StatusPill carries the red word) */}
+        <section className="rounded-2xl border border-danger/25 bg-surface p-6 shadow-[var(--shadow-card)] sm:p-7">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
               <Avatar initials={alertReport.initials} size="lg" />
@@ -165,11 +165,7 @@ export function RiskTrendsView({
           <h3 className="text-[15px] font-semibold tracking-tight text-foreground">All signals</h3>
           <span className="font-mono text-xs tabular-nums text-muted">{ranked.length} more</span>
         </div>
-        <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
-          {ranked.map((s) => (
-            <SignalRow key={s.id} signal={s} onClick={() => onSignal(s)} />
-          ))}
-        </div>
+        <SignalsPanel items={ranked} onSignal={onSignal} className="mt-4 max-w-2xl" />
       </section>
     </div>
   );

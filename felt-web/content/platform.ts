@@ -702,7 +702,7 @@ export const riskView = {
  * Severity ladder — meaning-first, drives the status colors:
  *   critical (red) = a relationship eroding now
  *   warning  (amber) = needs action soon (overdue, drifting)
- *   watch    (blue) = keep an eye on it / a coaching insight
+ *   watch    (amber) = keep an eye on it / a coaching insight (no blue — folds into amber)
  *   positive (green) = healthy or improving
  */
 export type Severity = "critical" | "warning" | "watch" | "positive";

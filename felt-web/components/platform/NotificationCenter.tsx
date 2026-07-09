@@ -4,10 +4,9 @@ import { useEffect } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import {
-  SignalRow,
+  SignalsPanel,
   SeveritySummary,
   countBySeverity,
-  bySeverity,
 } from "@/components/platform/severity";
 import { signals as allSignals, type Signal } from "@/content/platform";
 
@@ -31,7 +30,6 @@ export function NotificationCenter({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const list = [...allSignals].sort(bySeverity);
   const counts = countBySeverity(allSignals);
   const unread = allSignals.filter((s) => s.unread).length;
 
@@ -69,10 +67,8 @@ export function NotificationCenter({
           <SeveritySummary counts={counts} className="mt-2.5" />
         </div>
 
-        <div className="max-h-[24rem] space-y-2 overflow-y-auto p-3">
-          {list.map((s) => (
-            <SignalRow key={s.id} signal={s} onClick={() => handle(s)} />
-          ))}
+        <div className="max-h-[24rem] overflow-y-auto p-3">
+          <SignalsPanel items={allSignals} onSignal={handle} compact />
         </div>
 
         <button
