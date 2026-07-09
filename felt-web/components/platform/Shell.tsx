@@ -56,7 +56,9 @@ export function Shell() {
   const [view, setView] = useState<View>("home");
   const [convoId, setConvoId] = useState<string | null>(null);
   const [prepPerson, setPrepPerson] = useState<ReportId | undefined>(undefined);
-  const [theme, setTheme] = useState<ThemeId>("ember");
+  // Light-first: the cool clean white theme is the default; "ember" (cool dark)
+  // and the other accents live in the palette switcher as options.
+  const [theme, setTheme] = useState<ThemeId>("light");
   const [newConvoOpen, setNewConvoOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);

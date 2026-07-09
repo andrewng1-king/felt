@@ -596,11 +596,16 @@ export const homeSignals = {
  * Numbers are hand-authored to be internally consistent with the 7 conversations
  * above, as of the demo "today" (Jul 7).
  */
+/** The four functional teams the roster groups into (Conversations IA). */
+export type Team = "Engineering" | "Product" | "Design" | "Data";
+
 export type RosterEntry = {
   id: string;
   name: string;
   initials: string;
   role: string;
+  /** Which functional team this person sits on. */
+  team: Team;
   /** Human label + raw days since the last 1:1. */
   lastMetLabel: string;
   daysSince: number;
@@ -620,6 +625,14 @@ export const activity = {
     peopleTotal: 6,
     cadenceDays: 8, // avg days between 1:1s
   },
+  /** Signed month-over-month deltas for the KPI chips. cadenceDays down = a
+      tighter rhythm (good), so its sign is inverted when coloring. */
+  kpiDeltas: {
+    sessions: 2,
+    minutes: 18,
+    peopleCovered: 1,
+    cadenceDays: -2,
+  },
   /** 1:1s per week across the team, oldest → newest. Last entry = this week. */
   weekly: [
     { week: "May 19", count: 1 },
@@ -632,14 +645,28 @@ export const activity = {
     { week: "This week", count: 2 },
   ],
   roster: [
-    { id: "priya", name: "Priya S.", initials: "PS", role: "Product Lead", lastMetLabel: "3 days ago", daysSince: 3, sessions: 3, reportId: "priya", trend: "up" },
-    { id: "daniel", name: "Daniel K.", initials: "DK", role: "Senior Engineer", lastMetLabel: "4 days ago", daysSince: 4, sessions: 4, reportId: "daniel", trend: "down" },
-    { id: "elena", name: "Elena R.", initials: "ER", role: "Staff Engineer", lastMetLabel: "6 days ago", daysSince: 6, sessions: 2, reportId: "elena", trend: "up" },
-    { id: "marcus", name: "Marcus T.", initials: "MT", role: "Design Lead", lastMetLabel: "a week ago", daysSince: 7, sessions: 2, reportId: "marcus", trend: "steady" },
-    { id: "nadia", name: "Nadia H.", initials: "NH", role: "Data Lead", lastMetLabel: "17 days ago", daysSince: 17, sessions: 1, trend: "steady", overdue: true },
-    { id: "sam", name: "Sam O.", initials: "SO", role: "Eng Manager", lastMetLabel: "25 days ago", daysSince: 25, sessions: 1, trend: "steady", overdue: true },
+    { id: "priya", name: "Priya S.", initials: "PS", role: "Product Lead", team: "Product", lastMetLabel: "3 days ago", daysSince: 3, sessions: 3, reportId: "priya", trend: "up" },
+    { id: "daniel", name: "Daniel K.", initials: "DK", role: "Senior Engineer", team: "Engineering", lastMetLabel: "4 days ago", daysSince: 4, sessions: 4, reportId: "daniel", trend: "down" },
+    { id: "elena", name: "Elena R.", initials: "ER", role: "Staff Engineer", team: "Engineering", lastMetLabel: "6 days ago", daysSince: 6, sessions: 2, reportId: "elena", trend: "up" },
+    { id: "marcus", name: "Marcus T.", initials: "MT", role: "Design Lead", team: "Design", lastMetLabel: "a week ago", daysSince: 7, sessions: 2, reportId: "marcus", trend: "steady" },
+    { id: "nadia", name: "Nadia H.", initials: "NH", role: "Data Lead", team: "Data", lastMetLabel: "17 days ago", daysSince: 17, sessions: 1, trend: "steady", overdue: true },
+    { id: "sam", name: "Sam O.", initials: "SO", role: "Eng Manager", team: "Engineering", lastMetLabel: "25 days ago", daysSince: 25, sessions: 1, trend: "steady", overdue: true },
   ] as RosterEntry[],
 };
+
+/** Team-health trend — the Overview hero. Per-week average warmth (0–1) across
+    the team, oldest → newest; net UP over the quarter but dragged by Daniel's
+    decline. `sessions` matches `activity.weekly` so the hover reads true. */
+export const teamHealth: { label: string; value: number; sessions: number }[] = [
+  { label: "May 19", value: 0.62, sessions: 1 },
+  { label: "May 26", value: 0.66, sessions: 2 },
+  { label: "Jun 2", value: 0.63, sessions: 2 },
+  { label: "Jun 9", value: 0.69, sessions: 1 },
+  { label: "Jun 16", value: 0.74, sessions: 4 },
+  { label: "Jun 23", value: 0.7, sessions: 1 },
+  { label: "Jun 30", value: 0.75, sessions: 5 },
+  { label: "This week", value: 0.72, sessions: 2 },
+];
 
 /** Home "recent" feed — curated most-recent-first across everyone (by real date),
     so the activity list reads chronologically without reordering the grouped

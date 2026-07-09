@@ -43,11 +43,13 @@ export const severityMeta: Record<
   watch: {
     label: "Watch",
     Icon: Eye,
-    text: "text-info",
-    edge: "border-l-info",
-    dot: "bg-info",
-    pill: "text-info bg-info-soft border-info/30",
-    well: "border-info/40 bg-info-soft",
+    // Watch folds into the amber family (no blue) — distinguished from Warning by
+    // the label + Eye icon, not by hue. Keeps the palette to red/amber/green.
+    text: "text-warn",
+    edge: "border-l-warn",
+    dot: "bg-warn",
+    pill: "text-warn bg-warn-soft border-warn/30",
+    well: "border-warn/40 bg-warn-soft",
   },
   positive: {
     label: "Healthy",
@@ -75,6 +77,21 @@ export function countBySeverity(list: Signal[]): Partial<Record<Severity, number
     acc[s.severity] = (acc[s.severity] ?? 0) + 1;
     return acc;
   }, {});
+}
+
+/** Vercel-style status glyph — a filled dot inside a soft same-color halo.
+    The calm replacement for the bare colored dot; pairs with a short label. */
+export function StatusIcon({ severity, className }: { severity: Severity; className?: string }) {
+  const m = severityMeta[severity];
+  return (
+    <span
+      className={cn("relative inline-flex h-4 w-4 shrink-0 items-center justify-center", className)}
+      aria-hidden
+    >
+      <span className={cn("absolute inset-0 rounded-full opacity-20", m.dot)} />
+      <span className={cn("h-2 w-2 rounded-full", m.dot)} />
+    </span>
+  );
 }
 
 /** A small status chip: colored icon + label. The atom of the whole system. */

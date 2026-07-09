@@ -40,19 +40,19 @@
 /* felt. app — the live demo (/app). Flat near-black, single warm-orange accent. */
 [data-theme="night"] {
   color-scheme: dark;
-  /* Warm near-black ramp. The neutrals carry a faint warmth so the charcoal
-     relates to the brand orange (and to the warm marketing site) instead of
-     reading as cold, generic blue-gray SaaS. The elevation ramp is widened so
-     raised cards clearly sit ABOVE the base rather than muddying into it. */
-  --background: #0b0a09; /* warm near-black base */
-  --bg-alt: #110f0d;     /* inset rows / subtle wells */
-  --surface: #1a1715;    /* raised cards — clearly lighter than base */
-  --surface-2: #242019;  /* hover / nested surface */
-  --foreground: #f6f4f1;
-  --ink-soft: #b7b2a9;   /* secondary text (>=4.5:1 on base) */
-  --muted: #8c877d;      /* tertiary / labels */
-  --line: #2b2721;       /* warm hairline borders */
-  --line-strong: #3a352d;
+  /* Cool near-black ramp (the dark OPTION; light is the default). Neutral cool
+     charcoal — Vercel/Superhuman dark — with the one brand orange doing the
+     warmth. The elevation ramp is widened so raised cards clearly sit ABOVE the
+     base rather than muddying into it. */
+  --background: #0a0a0b; /* cool near-black base */
+  --bg-alt: #101012;     /* inset rows / subtle wells */
+  --surface: #151517;    /* raised cards — clearly lighter than base */
+  --surface-2: #1d1d20;  /* hover / nested surface */
+  --foreground: #fafafa;
+  --ink-soft: #a1a1a8;   /* secondary text (>=4.5:1 on base) */
+  --muted: #7a7a82;      /* tertiary / labels */
+  --line: #242428;       /* cool hairline borders */
+  --line-strong: #33333a;
   --accent: #e8703a;         /* the one color: brand, interactive, attention */
   --accent-strong: #f2814d;  /* hover / brighter */
   --accent-soft: #2a1710;    /* opaque dark-orange tint for selected/alert wells */
@@ -75,15 +75,16 @@
        danger  = eroding now   warn = needs action soon
        positive = healthy/up    info = watch / insight
      "-soft" is an opaque dark tint for alert wells, matching --accent-soft. */
-  --danger: #f87171;   --danger-soft: #2a1416;
-  --warn: #f5a524;     --warn-soft: #2a2009;
-  --positive: #34d399; --positive-soft: #0c2a20;
+  --danger: #e06b62;   --danger-soft: #2a1614;
+  --warn: #dda43f;     --warn-soft: #2a2009;
+  --positive: #4fb98c; --positive-soft: #0e2820;
   --info: #6ea8fb;     --info-soft: #10203a;
 
-  /* One legible family for the whole app — no serif display, no mono labels. */
-  --app-sans: var(--font-switzer), system-ui, sans-serif;
-  --app-serif: var(--font-switzer), system-ui, sans-serif;
-  --app-mono: var(--font-switzer), ui-monospace, monospace;
+  /* Vercel type: Geist Sans for UI + numbers, Geist Mono for numeric metadata
+     (deltas, axis) only — never reading text. No serif in the app. */
+  --app-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --app-serif: var(--font-geist-sans), system-ui, sans-serif;
+  --app-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 /* Accent presets (demo palette switcher). These override ONLY the accent tokens
@@ -106,38 +107,39 @@
   --highlight: #e4e4e7; --highlight-soft: #1b1b1e; --on-accent: #0a0a0b;
 }
 
-/* Light flat app theme (a switchable option). Flat surfaces, warm orange. */
+/* Light flat app theme — the /app DEFAULT. Cool clean white (Vercel/Stripe):
+   near-monochrome, one brand orange, flat surfaces, hairline structure. */
 [data-theme="light"] {
   color-scheme: light;
-  --background: #faf9f7;
-  --bg-alt: #f2f0ea;
-  --surface: #ffffff;
-  --surface-2: #f4f2ec;
-  --foreground: #1a1712;
-  --ink-soft: #5a5347;
-  --muted: #8b857a;
-  --line: #e6e2d9;
-  --line-strong: #d7d2c6;
-  --accent: #c65f34;
-  --accent-strong: #a94e2a;
-  --accent-soft: #f6e6dc;
-  --highlight: #c65f34;
-  --highlight-soft: #f6e6dc;
+  --background: #fafafa;  /* cool page ground */
+  --bg-alt: #f4f4f5;      /* inset rows / subtle wells */
+  --surface: #ffffff;     /* cards */
+  --surface-2: #f4f4f5;   /* hover / nested surface */
+  --foreground: #0a0a0a;  /* near-black cool ink */
+  --ink-soft: #525252;    /* secondary text */
+  --muted: #8f8f8f;       /* tertiary / labels */
+  --line: #ececec;        /* cool hairline */
+  --line-strong: #e0e0e0;
+  --accent: #e8703a;         /* brand orange — the disciplined guide */
+  --accent-strong: #cf5a26;  /* hover / deeper for legibility */
+  --accent-soft: #fdf1ea;    /* faint orange tint for selected/brand wells */
+  --highlight: #e8703a;
+  --highlight-soft: #fdf1ea;
   --on-accent: #ffffff;
-  --ink-deep: #1a1712;
-  /* Semantic status scale (light app). Darker hues for text contrast on white. */
-  --danger: #dc2626;   --danger-soft: #fbeae8;
-  --warn: #b45309;     --warn-soft: #fbf0e1;
-  --positive: #047857; --positive-soft: #e4f3ec;
-  --info: #2563eb;     --info-soft: #e8f0fe;
-  --app-sans: var(--font-switzer), system-ui, sans-serif;
-  --app-serif: var(--font-switzer), system-ui, sans-serif;
-  --app-mono: var(--font-switzer), ui-monospace, monospace;
-  /* Depth for the light app theme — a soft ambient shadow, no white sheen. */
-  --card-highlight: rgba(255, 255, 255, 0.7);
+  --ink-deep: #0a0a0a;
+  /* Semantic status scale (light) — MUTED & minimal. Red/amber/green only. */
+  --danger: #d1493f;   --danger-soft: #faeceb;
+  --warn: #c07c15;     --warn-soft: #f8f0e0;
+  --positive: #3f9c73; --positive-soft: #e9f4ef;
+  --info: #4a72c4;     --info-soft: #eaf0fa;
+  --app-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --app-serif: var(--font-geist-sans), system-ui, sans-serif;
+  --app-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* Depth — a soft cool ambient shadow, faint white sheen. Flat, not glassy. */
+  --card-highlight: rgba(255, 255, 255, 0.8);
   --card-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 40%);
-  --shadow-card: 0 1px 2px 0 rgba(26, 23, 18, 0.05), 0 12px 28px -20px rgba(26, 23, 18, 0.25);
-  --shadow-pop: 0 2px 6px 0 rgba(26, 23, 18, 0.08), 0 20px 44px -22px rgba(26, 23, 18, 0.32);
+  --shadow-card: 0 1px 2px 0 rgba(10, 10, 10, 0.04), 0 1px 3px 0 rgba(10, 10, 10, 0.05);
+  --shadow-pop: 0 2px 6px 0 rgba(10, 10, 10, 0.06), 0 12px 30px -16px rgba(10, 10, 10, 0.18);
 }
 [data-theme="light"] .glass {
   background: var(--surface);
@@ -149,7 +151,7 @@
 /* On the light app theme the emphasis card stays a dark block so its white
    text keeps working (classic inverted-emphasis panel). */
 [data-theme="light"] .felt-hero {
-  background: #1a1712;
+  background: #151517;
   color: #fff;
   border: none;
 }

@@ -3,6 +3,23 @@
 import { ArrowUpRight, ArrowDownRight, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { motion, useReducedMotion } from "motion/react";
 import type { Direction, Tone } from "@/content/platform";
+import { cn } from "@/lib/utils";
+
+/** Direction as a calm text pill (replaces the old prose direction label + dots).
+    up = Warming (green), down = Cooling (red), steady = Steady (muted). */
+export function DirectionPill({ direction }: { direction: Direction }) {
+  const map = {
+    up: { label: "Warming", cls: "text-positive bg-positive-soft" },
+    down: { label: "Cooling", cls: "text-danger bg-danger-soft" },
+    steady: { label: "Steady", cls: "text-muted bg-surface-2" },
+  } as const;
+  const m = map[direction];
+  return (
+    <span className={cn("inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium", m.cls)}>
+      {m.label}
+    </span>
+  );
+}
 
 // Per-report metric tone → semantic status. cool = attention (amber),
 // warm = healthy (green), mixed = neutral (muted). Color only where it means something.
@@ -64,8 +81,8 @@ export function DirectionBadge({
 }
 
 /** Tiny trend line from 0-1 values. Shape only — no axis, no numbers (no grade).
-    Down = danger red, up = healthy green, steady = neutral. Draws itself in on
-    mount, with a soft red pulse on the latest point when falling. */
+    Down = danger red, up = healthy green, steady = neutral. Draws itself in once
+    on mount (restrained motion — no looping pulse). */
 export function Sparkline({ points, direction }: { points: number[]; direction: Direction }) {
   const reduce = useReducedMotion();
   const W = 76;
@@ -95,16 +112,6 @@ export function Sparkline({ points, direction }: { points: number[]; direction: 
         viewport={{ once: true }}
         transition={{ duration: reduce ? 0 : 0.9, ease: [0.16, 1, 0.3, 1] }}
       />
-      {direction === "down" && !reduce && (
-        <motion.circle
-          cx={lx}
-          cy={ly}
-          r="2.5"
-          fill={stroke}
-          animate={{ r: [2.5, 6], opacity: [0.5, 0] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut" }}
-        />
-      )}
       <motion.circle
         cx={lx}
         cy={ly}

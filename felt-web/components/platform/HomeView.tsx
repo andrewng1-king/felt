@@ -1,26 +1,32 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import { ArrowRight, CalendarBlank, Target } from "@phosphor-icons/react/dist/ssr";
-import { Avatar, DirectionBadge } from "@/components/platform/bits";
-import { StatTile, SectionHeader, WeekBars } from "@/components/platform/ui";
+import { ArrowRight, CalendarBlank } from "@phosphor-icons/react/dist/ssr";
+import { Avatar, DirectionPill, Sparkline } from "@/components/platform/bits";
+import { SectionHeader, DeltaChip } from "@/components/platform/ui";
+import { TeamHealthBars } from "@/components/platform/charts";
+import { AnimatedNumber } from "@/components/platform/AnimatedNumber";
 import {
-  SignalRow,
-  SeveritySummary,
+  StatusIcon,
+  severityMeta,
   countBySeverity,
   bySeverity,
 } from "@/components/platform/severity";
 import {
   andrew,
   activity,
+  teamHealth,
   conversations,
   reports,
   recentActivity,
+  reportTrends,
   prepScenarios,
   signals,
   type ReportId,
   type Signal,
+  type Team,
 } from "@/content/platform";
+import { cn } from "@/lib/utils";
 
 export function HomeView({
   onOpenConvo,
@@ -34,73 +40,132 @@ export function HomeView({
   onSignal: (signal: Signal) => void;
 }) {
   const reduce = useReducedMotion();
-  const recent = recentActivity.map((id) => conversations.find((c) => c.id === id)!);
-  // The needs-attention queue: everything that isn't good news, most-severe first.
-  const attention = signals.filter((s) => s.severity !== "positive").sort(bySeverity);
-  const attentionCounts = countBySeverity(attention);
-  const { kpis } = activity;
+  const { kpis, kpiDeltas } = activity;
+  const recent = recentActivity.slice(0, 4).map((id) => conversations.find((c) => c.id === id)!);
 
-  // The person most worth rehearsing before your next 1:1 (the urgent scenario).
+  // reportId → team, so recent rows can show the department in the meta line.
+  const teamByReport = Object.fromEntries(
+    activity.roster.filter((r) => r.reportId).map((r) => [r.reportId, r.team]),
+  ) as Record<ReportId, Team>;
+
+  // Needs-attention queue: everything that isn't good news, most-severe first.
+  const attention = signals.filter((s) => s.severity !== "positive").sort(bySeverity);
+  const riskMix = countBySeverity(signals);
+  const currentPct = Math.round(teamHealth[teamHealth.length - 1].value * 100);
+
+  // The urgent person to rehearse before the next 1:1.
   const prepTarget = activity.roster.find((r) => r.reportId && prepScenarios[r.reportId]?.urgent);
   const prepId = prepTarget?.reportId;
   const prepScenario = prepId ? prepScenarios[prepId] : undefined;
 
+  const kpiCells: {
+    label: string;
+    value: string | number;
+    unit?: string;
+    delta: number;
+    goodWhenNegative?: boolean;
+    note: string;
+  }[] = [
+    { label: "Sessions", value: kpis.sessions, delta: kpiDeltas.sessions, note: "vs last month" },
+    { label: "Time in 1:1s", value: kpis.minutes, unit: "min", delta: kpiDeltas.minutes, note: "vs last month" },
+    { label: "People covered", value: `${kpis.peopleCovered}/${kpis.peopleTotal}`, delta: kpiDeltas.peopleCovered, note: "new this month" },
+    { label: "Cadence", value: kpis.cadenceDays, unit: "days", delta: kpiDeltas.cadenceDays, goodWhenNegative: true, note: "tighter rhythm" },
+  ];
+  // Explicit border classes: mobile = 2-col (mid divider + row divider), lg = 4-col rail.
+  const cellBorder = [
+    "lg:border-l-0",
+    "border-l border-line",
+    "border-t border-line lg:border-t-0 lg:border-l",
+    "border-l border-line border-t lg:border-t-0",
+  ];
+
+  const mixOrder: { key: "critical" | "warning" | "watch" | "positive"; label: string }[] = [
+    { key: "critical", label: "critical" },
+    { key: "warning", label: "overdue" },
+    { key: "watch", label: "watch" },
+    { key: "positive", label: "healthy" },
+  ];
+
   return (
-    <div className="mx-auto max-w-6xl px-5 py-7 sm:px-8 sm:py-8">
+    <div className="w-full px-5 py-6 sm:px-8 lg:px-10">
+      {/* greeting */}
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-[13px] text-muted">
-            Good afternoon, <span className="text-ink-soft">{andrew.name}</span>
-          </p>
-          <h1 className="mt-1.5 max-w-xl text-[26px] font-semibold leading-[1.12] tracking-[-0.02em] text-foreground sm:text-[30px]">
-            {kpis.sessions} conversations this month — and{" "}
-            <span className="text-accent">one</span> relationship that needs you.
-          </h1>
-        </div>
-        <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
+        <p className="text-sm text-ink-soft">
+          Good afternoon, <span className="font-medium text-foreground">{andrew.name}</span>
+        </p>
+        <span className="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink-soft">
+          <CalendarBlank size={13} className="text-muted" />
           {activity.rangeLabel}
         </span>
       </div>
 
-      {/* KPI row — the glance layer: how much am I doing, how's the cadence */}
-      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Sessions" value={kpis.sessions} hint="1:1s logged this month" />
-        <StatTile label="Time in 1:1s" value={kpis.minutes} unit="min" hint="≈ 2h 44m total" />
-        <StatTile
-          label="People covered"
-          value={`${kpis.peopleCovered}/${kpis.peopleTotal}`}
-          hint="met in the last 2 weeks"
-        />
-        <StatTile label="Cadence" value={kpis.cadenceDays} unit="days" hint="avg between 1:1s" />
+      {/* KPI row — airy, hairline dividers, no boxes */}
+      <div className="mt-6 grid grid-cols-2 border-y border-line lg:grid-cols-4">
+        {kpiCells.map((k, i) => (
+          <div key={k.label} className={cn("px-5 py-5 first:pl-0", cellBorder[i])}>
+            <p className="text-[11px] font-medium uppercase tracking-[0.04em] text-muted">{k.label}</p>
+            <p className="mt-3 flex items-baseline gap-1.5">
+              <span className="text-[38px] font-semibold leading-none tracking-[-0.03em] tabular-nums text-foreground sm:text-[40px]">
+                {typeof k.value === "number" ? <AnimatedNumber value={k.value} /> : k.value}
+              </span>
+              {k.unit && <span className="text-sm font-medium text-muted">{k.unit}</span>}
+            </p>
+            <DeltaChip delta={k.delta} goodWhenNegative={k.goodWhenNegative} note={k.note} />
+          </div>
+        ))}
       </div>
 
-      {/* Main + side rail */}
-      <div className="mt-6 grid gap-5 lg:grid-cols-3">
-        <div className="space-y-5 lg:col-span-2">
-          {/* Cadence */}
+      {/* main grid — hero + airy rail */}
+      <div className="mt-7 grid gap-6 lg:grid-cols-[1.85fr_1fr]">
+        {/* LEFT */}
+        <div>
+          {/* Hero: team health */}
           <section className="felt-card rounded-2xl p-5 sm:p-6">
-            <SectionHeader
-              title="Your cadence"
-              action={
-                <span className="inline-flex items-center gap-1.5 text-xs text-ink-soft">
-                  <CalendarBlank size={14} className="text-muted" /> 1:1s per week
-                </span>
-              }
-            />
-            <p className="mt-1 text-sm text-ink-soft">
-              You&apos;ve kept a steady rhythm — {kpis.sessions} conversations over the last eight weeks.
-            </p>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-sm font-semibold text-foreground">Team health</h2>
+              <span className="text-xs text-muted">avg warmth · last 8 weeks</span>
+            </div>
+            <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span className="text-[34px] font-semibold leading-none tracking-[-0.03em] tabular-nums text-foreground">
+                {currentPct}
+                <span className="text-lg text-muted">%</span>
+              </span>
+              <span className="text-[13px] text-ink-soft">
+                Trending up over the quarter — one relationship pulling against it.
+              </span>
+            </div>
             <div className="mt-6">
-              <WeekBars data={activity.weekly} />
+              <TeamHealthBars data={teamHealth} />
+            </div>
+            {/* risk mix — muted, minimal (red/amber/green only) */}
+            <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-4">
+              {mixOrder
+                .filter((m) => riskMix[m.key])
+                .map((m) => (
+                  <span key={m.key} className="inline-flex items-center gap-2 text-[13px] text-ink-soft">
+                    <StatusIcon severity={m.key} />
+                    <span className="font-mono font-semibold tabular-nums text-foreground">{riskMix[m.key]}</span>
+                    {m.label}
+                  </span>
+                ))}
             </div>
           </section>
 
           {/* Recent conversations */}
-          <section className="felt-card rounded-2xl">
-            <div className="px-5 pt-5 sm:px-6">
-              <SectionHeader title="Recent conversations" />
-            </div>
-            <div className="mt-3 divide-y divide-line">
+          <div className="mt-7">
+            <SectionHeader
+              title="Recent conversations"
+              action={
+                <button
+                  type="button"
+                  onClick={onOpenRisk}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-accent outline-none transition hover:text-accent-strong focus-visible:ring-2 focus-visible:ring-accent/50"
+                >
+                  View all <ArrowRight size={12} />
+                </button>
+              }
+            />
+            <div className="mt-2">
               {recent.map((c, i) => {
                 const r = reports[c.reportId];
                 return (
@@ -110,67 +175,90 @@ export function HomeView({
                     onClick={() => onOpenConvo(c.id)}
                     initial={reduce ? false : { opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: reduce ? 0 : i * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                    className="group flex w-full items-center gap-3 px-5 py-3.5 text-left outline-none transition-colors hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50 sm:px-6"
+                    transition={{ duration: 0.28, delay: reduce ? 0 : i * 0.04, ease: [0.16, 1, 0.3, 1] }}
+                    className="group flex w-full items-center gap-3 rounded-lg border-line px-2 py-3.5 text-left outline-none transition-colors [&:not(:first-child)]:border-t hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50"
                   >
                     <Avatar initials={r.initials} />
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-foreground">{r.name}</span>
-                        <span className="text-[11px] tabular-nums text-muted">
-                          S{c.session} · {c.whenLabel}
-                        </span>
+                      <div className="text-sm font-medium text-foreground">{r.name}</div>
+                      <div className="mt-0.5 text-xs text-muted">
+                        {teamByReport[c.reportId]} · session {c.session} · {c.duration}
                       </div>
-                      <p className="mt-0.5 truncate text-sm text-ink-soft">{c.headline}</p>
                     </div>
-                    <DirectionBadge direction={c.direction} label={c.directionLabel} subtle />
+                    <DirectionPill direction={c.direction} />
                     <ArrowRight
                       size={15}
-                      className="hidden shrink-0 text-muted transition group-hover:translate-x-0.5 group-hover:text-foreground sm:block"
+                      className="hidden shrink-0 text-muted opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100 sm:block"
                     />
                   </motion.button>
                 );
               })}
             </div>
-          </section>
+          </div>
         </div>
 
-        {/* Side rail — needs attention, severity-ranked */}
-        <div className="space-y-6">
-          <div>
-            <div className="flex items-baseline justify-between gap-2 px-0.5">
-              <h2 className="text-[15px] font-semibold tracking-tight text-foreground">Needs attention</h2>
+        {/* RIGHT rail */}
+        <div>
+          <SectionHeader
+            title="Needs attention"
+            action={
               <button
                 type="button"
                 onClick={onOpenRisk}
-                className="inline-flex items-center gap-1 rounded text-xs font-medium text-accent outline-none transition hover:text-accent-strong focus-visible:ring-2 focus-visible:ring-accent/50"
+                className="inline-flex items-center gap-1 text-xs font-medium text-accent outline-none transition hover:text-accent-strong focus-visible:ring-2 focus-visible:ring-accent/50"
               >
-                Risk &amp; Trends
-                <ArrowRight size={13} />
+                Risk &amp; Trends <ArrowRight size={12} />
               </button>
-            </div>
-            <SeveritySummary counts={attentionCounts} className="mt-3 px-0.5" />
-            <div className="mt-3 space-y-2.5">
-              {attention.map((s) => (
-                <SignalRow key={s.id} signal={s} onClick={() => onSignal(s)} />
+            }
+          />
+          {/* summary counts */}
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+            {mixOrder
+              .filter((m) => m.key !== "positive" && riskMix[m.key])
+              .map((m) => (
+                <span key={m.key} className="inline-flex items-center gap-2 text-xs text-ink-soft">
+                  <StatusIcon severity={m.key} />
+                  <span className="font-mono font-semibold tabular-nums text-foreground">{riskMix[m.key]}</span>
+                  {m.label}
+                </span>
               ))}
-            </div>
+          </div>
+          {/* rows */}
+          <div className="mt-2">
+            {attention.map((s) => {
+              const meta = severityMeta[s.severity];
+              const trend = s.reportId ? reportTrends[s.reportId] : undefined;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => onSignal(s)}
+                  className="group flex w-full items-center gap-3 rounded-lg border-line px-2 py-3 text-left outline-none transition-colors [&:not(:first-child)]:border-t hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50"
+                >
+                  <StatusIcon severity={s.severity} />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium text-foreground">{s.name}</div>
+                    <div className="mt-0.5 truncate text-xs text-muted">
+                      <span className={cn("font-medium", meta.text)}>{meta.label}</span> · {s.detail}
+                    </div>
+                  </div>
+                  {trend && <Sparkline points={trend.points} direction={trend.dir} />}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Focus Brief — rehearse before the next hard 1:1 */}
+          {/* Prepare */}
           {prepId && prepScenario && (
             <button
               type="button"
               onClick={() => onOpenPrepare(prepId)}
-              className="felt-card felt-card-pop group flex w-full flex-col rounded-2xl p-5 text-left outline-none transition hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-accent/50"
+              className="felt-card felt-card-pop mt-6 flex w-full flex-col rounded-2xl p-5 text-left outline-none transition hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-accent/50"
             >
-              <div className="flex items-center gap-2">
-                <Target size={16} weight="fill" className="text-accent" />
-                <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
-                  Prepare · before your next 1:1
-                </span>
-              </div>
-              <p className="mt-2.5 text-sm leading-relaxed text-foreground">{prepScenario.title}</p>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-accent">
+                Prepare · before your next 1:1
+              </span>
+              <p className="mt-2.5 text-sm leading-relaxed text-ink-soft">{prepScenario.title}</p>
               <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-accent">
                 Rehearse with {reports[prepId].name}
                 <ArrowRight size={13} className="transition group-hover:translate-x-0.5" />
