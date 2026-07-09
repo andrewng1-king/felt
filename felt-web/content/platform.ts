@@ -620,17 +620,17 @@ export const activity = {
   rangeLabel: "Last 30 days",
   kpis: {
     sessions: 11,
-    minutes: 164, // 2h 44m across the team this month
-    peopleCovered: 4,
-    peopleTotal: 6,
+    minutes: 164, // 2h 44m across the team this month (avg 1:1 ≈ 15 min)
     cadenceDays: 8, // avg days between 1:1s
   },
   /** Signed month-over-month deltas for the KPI chips. cadenceDays down = a
-      tighter rhythm (good), so its sign is inverted when coloring. */
+      tighter rhythm (good), so its sign is inverted when coloring. `health` is
+      in percentage points — Priya's third strong session pushed her back into
+      the "healthy" set. */
   kpiDeltas: {
     sessions: 2,
     minutes: 18,
-    peopleCovered: 1,
+    health: 8,
     cadenceDays: -2,
   },
   /** 1:1s per week across the team, oldest → newest. Last entry = this week. */

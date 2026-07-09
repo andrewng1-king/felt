@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Info } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils";
 
 /** Section heading with an optional right-aligned action. */
@@ -14,6 +15,28 @@ export function SectionHeader({
       <h2 className="text-[15px] font-semibold tracking-tight text-foreground">{title}</h2>
       {action}
     </div>
+  );
+}
+
+/** An ⓘ affordance that reveals an explainer on hover/focus. CSS-only (group +
+    focus-within) so it needs no client JS; keyboard-reachable via the button. */
+export function InfoTip({ label }: { label: ReactNode }) {
+  return (
+    <span className="group/tip relative inline-flex shrink-0 align-middle">
+      <button
+        type="button"
+        aria-label="What this means"
+        className="rounded-full p-0.5 text-muted outline-none transition hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent/50"
+      >
+        <Info size={13} weight="bold" />
+      </button>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-line bg-surface-2 p-2.5 text-left text-xs font-normal normal-case leading-relaxed tracking-normal text-ink-soft opacity-0 shadow-[0_16px_40px_-16px_rgba(0,0,0,0.7)] transition-opacity duration-150 group-hover/tip:opacity-100 group-focus-within/tip:opacity-100"
+      >
+        {label}
+      </span>
+    </span>
   );
 }
 

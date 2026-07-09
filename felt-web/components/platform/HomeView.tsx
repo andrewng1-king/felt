@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight, CalendarBlank } from "@phosphor-icons/react/dist/ssr";
 import { Avatar, DirectionPill, Sparkline } from "@/components/platform/bits";
-import { SectionHeader, DeltaChip } from "@/components/platform/ui";
+import { SectionHeader, DeltaChip, InfoTip } from "@/components/platform/ui";
 import { TeamHealthBars, StatusRing, EmpathyArc } from "@/components/platform/charts";
 import { AnimatedNumber } from "@/components/platform/AnimatedNumber";
 import {
@@ -41,6 +41,15 @@ export function HomeView({
 }) {
   const reduce = useReducedMotion();
   const { kpis, kpiDeltas } = activity;
+
+  // Derived KPI values — kept consistent with the session/roster data.
+  const avgMinutes = Math.round(kpis.minutes / kpis.sessions); // avg length of one 1:1
+  const lastAvg = Math.round((kpis.minutes - kpiDeltas.minutes) / (kpis.sessions - kpiDeltas.sessions));
+  const totalTimeLabel = `${Math.floor(kpis.minutes / 60)}h ${kpis.minutes % 60}m`;
+  const healthy = activity.roster.filter((r) => r.trend !== "down").length;
+  const healthPct = Math.round((healthy / activity.roster.length) * 100);
+  const atRisk = activity.roster.filter((r) => r.trend === "down").map((r) => r.name.split(" ")[0]);
+
   const recent = recentActivity.slice(0, 4).map((id) => conversations.find((c) => c.id === id)!);
 
   // reportId → team, so recent rows can show the department in the meta line.
@@ -67,11 +76,35 @@ export function HomeView({
     delta: number;
     goodWhenNegative?: boolean;
     note: string;
+    tooltip?: string;
   }[] = [
     { label: "Sessions", value: kpis.sessions, delta: kpiDeltas.sessions, note: "vs last month" },
-    { label: "Time in 1:1s", value: kpis.minutes, unit: "min", delta: kpiDeltas.minutes, note: "vs last month" },
-    { label: "People covered", value: `${kpis.peopleCovered}/${kpis.peopleTotal}`, delta: kpiDeltas.peopleCovered, note: "new this month" },
-    { label: "Cadence", value: kpis.cadenceDays, unit: "days", delta: kpiDeltas.cadenceDays, goodWhenNegative: true, note: "tighter rhythm" },
+    {
+      label: "Average 1:1 time",
+      value: avgMinutes,
+      unit: "min",
+      delta: avgMinutes - lastAvg,
+      note: "vs last month",
+      tooltip: `Average length of one 1:1 — total time ÷ number of conversations. This month: ${totalTimeLabel} across ${kpis.sessions} sessions.`,
+    },
+    {
+      label: "Relationship health",
+      value: `${healthPct}%`,
+      delta: kpiDeltas.health,
+      note: "vs last month",
+      tooltip: `Share of your people whose relationship is holding steady or improving. ${healthy} of ${activity.roster.length} are healthy${
+        atRisk.length ? ` — ${atRisk.join(", ")} ${atRisk.length === 1 ? "is" : "are"} trending down` : ""
+      }.`,
+    },
+    {
+      label: "Cadence",
+      value: kpis.cadenceDays,
+      unit: "days",
+      delta: kpiDeltas.cadenceDays,
+      goodWhenNegative: true,
+      note: "tighter rhythm",
+      tooltip: "Average number of days between your 1:1s. A lower number means you're meeting people more often.",
+    },
   ];
   // Explicit border classes: mobile = 2-col (mid divider + row divider), lg = 4-col rail.
   const cellBorder = [
@@ -105,7 +138,10 @@ export function HomeView({
       <div className="mt-6 grid grid-cols-2 border-y border-line lg:grid-cols-4">
         {kpiCells.map((k, i) => (
           <div key={k.label} className={cn("px-5 py-5 first:pl-0", cellBorder[i])}>
-            <p className="text-[11px] font-medium uppercase tracking-[0.04em] text-muted">{k.label}</p>
+            <div className="flex items-center gap-1">
+              <p className="text-[11px] font-medium uppercase tracking-[0.04em] text-muted">{k.label}</p>
+              {k.tooltip && <InfoTip label={k.tooltip} />}
+            </div>
             <p className="mt-3 flex items-baseline gap-1.5">
               <span className="text-[38px] font-semibold leading-none tracking-[-0.03em] tabular-nums text-foreground sm:text-[40px]">
                 {typeof k.value === "number" ? <AnimatedNumber value={k.value} /> : k.value}
