@@ -191,6 +191,83 @@ export function TrendLine({
 }
 
 /**
+ * Empathy arc — every tracked 1:1 overlaid on a NORMALIZED 0→100% timeline
+ * (start of the talk → end), with one bold average line. Honest because the
+ * mirror data is already stored in normalized time, so we compare the SHAPE of
+ * conversations, not wall-clock seconds. Reveals the manager's pattern: where
+ * people open up and where they pull back. Open (top) ↔ Guarded (bottom).
+ */
+type ArcPoint = readonly [number, number];
+type ArcCurve = readonly ArcPoint[];
+
+export function EmpathyArc({ curves, className = "h-36 w-full" }: { curves: readonly ArcCurve[]; className?: string }) {
+  const reduce = useReducedMotion();
+  const W = 320;
+  const H = 130;
+  const pad = 8;
+  const N = 24;
+  const x = (t: number) => pad + t * (W - 2 * pad);
+  const y = (v: number) => H - pad - v * (H - 2 * pad);
+  const interp = (pts: ArcCurve, t: number) => {
+    if (t <= pts[0][0]) return pts[0][1];
+    for (let i = 1; i < pts.length; i++) {
+      if (t <= pts[i][0]) {
+        const [t0, v0] = pts[i - 1];
+        const [t1, v1] = pts[i];
+        const f = (t - t0) / (t1 - t0 || 1);
+        return v0 + f * (v1 - v0);
+      }
+    }
+    return pts[pts.length - 1][1];
+  };
+  const toPath = (pts: ArcCurve) =>
+    pts.map(([t, v], i) => `${i ? "L" : "M"} ${x(t).toFixed(1)} ${y(v).toFixed(1)}`).join(" ");
+  const samples = Array.from({ length: N + 1 }, (_, i) => i / N);
+  const mean: ArcCurve = samples.map((t) => {
+    const vals = curves.map((c) => interp(c, t));
+    return [t, vals.reduce((a, b) => a + b, 0) / vals.length];
+  });
+  const meanPath = toPath(mean);
+  const meanArea = `${meanPath} L ${x(1).toFixed(1)} ${H - pad} L ${x(0).toFixed(1)} ${H - pad} Z`;
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className={className} aria-hidden>
+      <defs>
+        <linearGradient id="empathy-arc" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.14" />
+          <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <line x1={pad} y1={y(0.5)} x2={W - pad} y2={y(0.5)} stroke="var(--line)" strokeWidth="1" strokeDasharray="3 4" />
+      {curves.map((c, i) => (
+        <path
+          key={i}
+          d={toPath(c)}
+          fill="none"
+          stroke="var(--muted)"
+          strokeWidth="1"
+          strokeOpacity="0.2"
+          vectorEffect="non-scaling-stroke"
+        />
+      ))}
+      <path d={meanArea} fill="url(#empathy-arc)" />
+      <motion.path
+        d={meanPath}
+        fill="none"
+        stroke="var(--accent)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+        initial={{ pathLength: reduce ? 1 : 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: reduce ? 0 : 0.9, ease: [0.16, 1, 0.3, 1] }}
+      />
+    </svg>
+  );
+}
+
+/**
  * Readiness meter — a qualitative 3-step indicator (Not ready → Almost → Ready).
  * NEVER a 0–100 grade; it fills to the named state only. Ready reads green,
  * anything earlier reads in the brand accent.

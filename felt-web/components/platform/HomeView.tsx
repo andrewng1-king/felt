@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight, CalendarBlank } from "@phosphor-icons/react/dist/ssr";
 import { Avatar, DirectionPill, Sparkline } from "@/components/platform/bits";
 import { SectionHeader, DeltaChip } from "@/components/platform/ui";
-import { TeamHealthBars } from "@/components/platform/charts";
+import { TeamHealthBars, StatusRing, EmpathyArc } from "@/components/platform/charts";
 import { AnimatedNumber } from "@/components/platform/AnimatedNumber";
 import {
   StatusIcon,
@@ -52,6 +52,8 @@ export function HomeView({
   const attention = signals.filter((s) => s.severity !== "positive").sort(bySeverity);
   const riskMix = countBySeverity(signals);
   const currentPct = Math.round(teamHealth[teamHealth.length - 1].value * 100);
+  // Every conversation's emotional line, already on a normalized 0→1 timeline.
+  const arcs = conversations.map((c) => c.mirror.signals.openness.points);
 
   // The urgent person to rehearse before the next 1:1.
   const prepTarget = activity.roster.find((r) => r.reportId && prepScenarios[r.reportId]?.urgent);
@@ -137,17 +139,31 @@ export function HomeView({
             <div className="mt-6">
               <TeamHealthBars data={teamHealth} />
             </div>
-            {/* risk mix — muted, minimal (red/amber/green only) */}
-            <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-4">
-              {mixOrder
-                .filter((m) => riskMix[m.key])
-                .map((m) => (
-                  <span key={m.key} className="inline-flex items-center gap-2 text-[13px] text-ink-soft">
-                    <StatusIcon severity={m.key} />
-                    <span className="font-mono font-semibold tabular-nums text-foreground">{riskMix[m.key]}</span>
-                    {m.label}
-                  </span>
-                ))}
+          </section>
+
+          {/* Empathy arc — every 1:1 overlaid on a normalized timeline, one average shape */}
+          <section className="felt-card mt-5 rounded-2xl p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-sm font-semibold text-foreground">Your conversation arc</h2>
+              <span className="text-xs text-muted">avg across {arcs.length} 1:1s</span>
+            </div>
+            <p className="mt-1 text-[13px] text-ink-soft">
+              Every tracked 1:1 overlaid — the bold line is how a typical conversation with you moves from open to
+              close.
+            </p>
+            <div className="mt-4 flex items-stretch gap-3">
+              <div className="flex flex-col justify-between py-1 text-[10px] font-medium uppercase tracking-wide text-muted">
+                <span>Open</span>
+                <span>Guarded</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <EmpathyArc curves={arcs} />
+                <div className="mt-2 flex justify-between text-[10px] font-medium uppercase tracking-wide text-muted">
+                  <span>Start</span>
+                  <span>Middle</span>
+                  <span>End</span>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -199,32 +215,41 @@ export function HomeView({
 
         {/* RIGHT rail */}
         <div>
-          <SectionHeader
-            title="Needs attention"
-            action={
-              <button
-                type="button"
-                onClick={onOpenRisk}
-                className="inline-flex items-center gap-1 text-xs font-medium text-accent outline-none transition hover:text-accent-strong focus-visible:ring-2 focus-visible:ring-accent/50"
-              >
-                Risk &amp; Trends <ArrowRight size={12} />
-              </button>
-            }
-          />
-          {/* summary counts */}
-          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-            {mixOrder
-              .filter((m) => m.key !== "positive" && riskMix[m.key])
-              .map((m) => (
-                <span key={m.key} className="inline-flex items-center gap-2 text-xs text-ink-soft">
-                  <StatusIcon severity={m.key} />
-                  <span className="font-mono font-semibold tabular-nums text-foreground">{riskMix[m.key]}</span>
-                  {m.label}
-                </span>
-              ))}
+          {/* Team status — the flagged-conversation ring */}
+          <div className="felt-card rounded-2xl p-5">
+            <h2 className="text-sm font-semibold text-foreground">Team status</h2>
+            <div className="mt-3 flex items-center gap-5">
+              <StatusRing counts={riskMix} size={112} />
+              <div className="grid flex-1 grid-cols-1 gap-y-2.5">
+                {mixOrder
+                  .filter((m) => riskMix[m.key])
+                  .map((m) => (
+                    <span key={m.key} className="inline-flex items-center gap-2 text-[13px] text-ink-soft">
+                      <StatusIcon severity={m.key} size={14} />
+                      <span className="font-mono font-semibold tabular-nums text-foreground">{riskMix[m.key]}</span>
+                      {m.label}
+                    </span>
+                  ))}
+              </div>
+            </div>
           </div>
-          {/* rows */}
-          <div className="mt-2">
+
+          {/* Needs attention */}
+          <div className="mt-6">
+            <SectionHeader
+              title="Needs attention"
+              action={
+                <button
+                  type="button"
+                  onClick={onOpenRisk}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-accent outline-none transition hover:text-accent-strong focus-visible:ring-2 focus-visible:ring-accent/50"
+                >
+                  Risk &amp; Trends <ArrowRight size={12} />
+                </button>
+              }
+            />
+            {/* rows */}
+            <div className="mt-2">
             {attention.map((s) => {
               const meta = severityMeta[s.severity];
               const trend = s.reportId ? reportTrends[s.reportId] : undefined;
@@ -246,6 +271,7 @@ export function HomeView({
                 </button>
               );
             })}
+            </div>
           </div>
 
           {/* Prepare */}

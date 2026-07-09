@@ -53,7 +53,7 @@ export function CommandPalette({
       onClose();
     };
     const nav: Item[] = [
-      { id: "nav-home", section: "Go to", label: "Overview", Icon: House, run: go("home") },
+      { id: "nav-home", section: "Go to", label: "Dashboard", Icon: House, run: go("home") },
       { id: "nav-prepare", section: "Go to", label: "Prepare", Icon: Target, run: go("prepare") },
       { id: "nav-convos", section: "Go to", label: "Conversations", Icon: ChatsCircle, run: go("conversations") },
       { id: "nav-risk", section: "Go to", label: "Risk & Trends", Icon: WarningDiamond, run: go("risk") },

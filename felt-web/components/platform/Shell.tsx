@@ -38,14 +38,14 @@ import { andrew, conversations, reports, signals, type ReportId, type Signal } f
 type View = "home" | "prepare" | "conversations" | "report" | "risk" | "settings";
 
 const nav: { id: "home" | "prepare" | "conversations" | "risk"; label: string; Icon: typeof House }[] = [
-  { id: "home", label: "Overview", Icon: House },
+  { id: "home", label: "Dashboard", Icon: House },
   { id: "prepare", label: "Prepare", Icon: Target },
   { id: "conversations", label: "Conversations", Icon: ChatsCircle },
   { id: "risk", label: "Risk & Trends", Icon: WarningDiamond },
 ];
 
 const titles: Record<Exclude<View, "report">, string> = {
-  home: "Overview",
+  home: "Dashboard",
   prepare: "Prepare",
   conversations: "Conversations",
   risk: "Risk & Trends",
@@ -153,7 +153,7 @@ export function Shell() {
         <button
           type="button"
           onClick={() => setView("home")}
-          aria-label="felt. — Overview"
+          aria-label="felt. — Dashboard"
           className="flex items-center rounded-lg px-2 py-1.5 text-left outline-none transition hover:opacity-80 focus-visible:ring-2 focus-visible:ring-accent/50 md:mb-6"
         >
           <span className="text-[20px] font-semibold tracking-[-0.03em] text-foreground">
