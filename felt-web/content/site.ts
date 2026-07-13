@@ -16,7 +16,7 @@ export const hero = {
   eyebrow: "Conversation intelligence for 1:1s",
   headline: "The feedback your people can't give you.",
   subtext:
-    "felt. reads your most important 1:1s and shows you what your best people felt but couldn't say to your face.",
+    "felt. reads your most important 1:1s and shows you how you actually landed — what you did and the effect it had — so you hear what your best people can't say to your face.",
   secondaryCta: "See how it works",
   secondaryHref: "#how",
 } as const;
@@ -28,11 +28,11 @@ export const hero = {
  * and reveals what was said, how it landed, and which felt. signal caught it.
  */
 export const empathyMirror = {
-  label: "Empathy Mirror",
+  label: "How It Landed",
   caption: "How your last 1:1 actually landed, second by second.",
   signals: {
     openness: {
-      name: "How they felt",
+      name: "The room",
       points: [
         [0, 0.42],
         [0.15, 0.66],
@@ -61,18 +61,18 @@ export const empathyMirror = {
       value: 0.66,
       at: "0:40 in",
       label: "They warmed up",
-      signal: "Empathy Mirror",
+      signal: "How It Landed",
       said: "How are you finding the new scope?",
-      felt: "Read the question as genuine care. Started to open up.",
+      felt: "Your question landed as real — they started to open up.",
     },
     {
       t: 0.5,
       value: 0.2,
       at: "6:10 in",
       label: "The moment it shifted",
-      signal: "Unspoken Concern",
+      signal: "Quiet Signal",
       said: "That's just how the timeline works, so we'll make it happen.",
-      felt: "Felt dismissed. Went quiet and stopped raising the real worry.",
+      felt: "Your line closed the topic — their answers got shorter and the worry never came back up.",
       shift: true,
     },
     {
@@ -82,7 +82,7 @@ export const empathyMirror = {
       label: "Guarded to the end",
       signal: "Risk Signal",
       said: "Anyway, you've got this.",
-      felt: "Reassurance landed as a close-off. They left holding back.",
+      felt: "Your reassurance landed as a close-off — they left holding the thing they came to say.",
     },
   ],
   read: "They left more guarded than they arrived. You never heard it out loud.",
@@ -90,16 +90,16 @@ export const empathyMirror = {
 
 /**
  * Static chrome for the hero's platform preview. Illustrative product UI shown
- * around the interactive Empathy Mirror chart — none of it is clickable except
+ * around the interactive How It Landed chart — none of it is clickable except
  * the chart itself. Marked "Example" so it reads as a figure, not a live app.
  */
 export const platform = {
   conversation: "1:1 with Daniel K.",
   meta: "Post-conversation · 14 min · voice + transcript",
-  nav: ["Conversations", "Empathy Mirror", "Trends", "Risk Signals"],
+  nav: ["Conversations", "How It Landed", "Trends", "Risk Signals"],
   stats: [
-    { label: "Empathy Mirror", value: "62", trend: "down", note: "vs. your baseline 74" },
-    { label: "Unspoken Concern", value: "High", trend: "flag", note: "1 concern held back" },
+    { label: "How It Landed", value: "62", trend: "down", note: "vs. your baseline 74" },
+    { label: "Quiet Signal", value: "High", trend: "flag", note: "1 topic dropped off" },
     { label: "Risk Signal", value: "Rising", trend: "up", note: "trust trending down" },
   ],
 } as const;
@@ -109,7 +109,7 @@ export const problem = {
   body: "The power gap makes honesty unsafe. So the manager guesses, the employee holds back, and trust erodes quietly.",
   points: [
     "HR tools measure the damage after someone quits. None of them prevent the conversation that caused it.",
-    "Human coaching runs $300 to $500 a month, moves slowly, and never scales to every hard 1:1.",
+    "A human coach runs $200 to $600 an hour, a few times a month — and can't sit in every hard 1:1. felt. is about $32 a month, on every one.",
     "No tool gives a manager the feedback their employee could not safely say out loud.",
   ],
 } as const;
@@ -125,7 +125,7 @@ export const solution = {
     {
       tag: "After",
       title: "See how you actually landed",
-      body: "The Empathy Mirror shows what the other person likely felt, and the exact moment things shifted.",
+      body: "How It Landed shows the effect you had on the other person, and the exact moment things shifted.",
     },
     {
       tag: "Over time",
@@ -139,15 +139,15 @@ export const metrics = {
   heading: "Three signals no other tool can read.",
   items: [
     {
-      name: "Empathy Mirror",
+      name: "How It Landed",
       phase: "Post",
-      body: "How the other person likely felt. The only metric on the market that reads the employee, not the manager.",
+      body: "The effect you had, shown as behavior you can't argue with. The only read on the market that measures your impact — not the employee's emotion, not a checklist.",
       featured: true,
     },
     {
-      name: "Unspoken Concern Signal",
+      name: "Quiet / Drop-off Signal",
       phase: "Post",
-      body: "What they did not say, but probably wanted to.",
+      body: "Where the conversation went flat — the topics they stopped engaging with, as evidence of how you landed.",
       featured: false,
     },
     {
@@ -181,12 +181,27 @@ export const trust = {
 } as const;
 
 export const differentiators = {
-  heading: "Every other tool grades you. felt. reads them.",
-  body: "Kona, 15Five, and Gong all tell you how you performed. felt. tells you how they felt. Different product, different category.",
+  heading: "Every other tool grades you. felt. shows you the effect you had.",
+  body: "Kona, Yoodli, 15Five, and Gong all tell you how you performed against a checklist. felt. shows you the effect you had — described as behavior you can't argue with. You supply the feeling. Different product, different category.",
   points: [
-    "Reads voice, tone, and transcript together. Not just the words, but what they triggered.",
+    "Reads voice, tone, and transcript together. Not just the words, but the effect they had.",
     "Built only for internal 1:1s. Not sales calls, not standups. The conversations that keep good people or lose them.",
   ],
+} as const;
+
+/**
+ * The Mirror Rule — felt.'s locked trust principle, made consumer-facing. felt.
+ * only reflects the manager's own pattern forward; it never predicts the other
+ * person. A mirror can't be wrong, so it never breaks trust. The signature
+ * forward-looking line ("name the cost, don't ask a question") is the exhibit.
+ */
+export const mirrorRule = {
+  eyebrow: "Why you can trust it",
+  heading: "A mirror, not a fortune-teller.",
+  body: "felt. only ever reflects your own pattern back — never a guess about what someone else is thinking or will do. It names what your pattern tends to cost, and leaves the choice to you.",
+  quote: "This open closed the room 4 of the last 5 times. Unless you change it, this one goes the same.",
+  caption: "How felt. speaks to you",
+  footnote: "Because it only ever describes you, it can't be wrong — so it never breaks your trust.",
 } as const;
 
 /**

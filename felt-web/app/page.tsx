@@ -8,6 +8,7 @@ import { Solution } from "@/components/sections/Solution";
 import { Metrics } from "@/components/sections/Metrics";
 import { Quote } from "@/components/sections/Quote";
 import { Differentiators } from "@/components/sections/Differentiators";
+import { MirrorRule } from "@/components/sections/MirrorRule";
 import { Pricing } from "@/components/sections/Pricing";
 import { Waitlist } from "@/components/sections/Waitlist";
 
@@ -24,6 +25,7 @@ export default function Home() {
         <Metrics />
         <Quote />
         <Differentiators />
+        <MirrorRule />
         <Pricing />
         <Waitlist />
       </main>

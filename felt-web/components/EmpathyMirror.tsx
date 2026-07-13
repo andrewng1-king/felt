@@ -369,7 +369,7 @@ export function EmpathyMirror({
             <motion.span className="text-base font-semibold leading-none tabular-nums tracking-tight text-foreground">
               {feltText}
             </motion.span>
-            <span className="text-[9px] uppercase tracking-[0.12em] text-muted">felt</span>
+            <span className="text-[9px] uppercase tracking-[0.12em] text-muted">open</span>
           </div>
         </motion.div>
 
@@ -387,7 +387,7 @@ export function EmpathyMirror({
               onMouseEnter={() => setActive(i)}
               onFocus={() => setActive(i)}
               aria-pressed={i === active}
-              aria-label={`${m.at}: ${m.label}. You said, ${m.said}. They felt: ${m.felt}`}
+              aria-label={`${m.at}: ${m.label}. You said, ${m.said}. The effect: ${m.felt}`}
               className="absolute h-9 w-9 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
               style={{ left: `${(cxi / 480) * 100}%`, top: `${(cyi / 260) * 100}%` }}
             />
