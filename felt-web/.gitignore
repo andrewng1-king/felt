@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.local.example
+
+# felt. concierge — local per-pair memory. NEVER commit: it holds real
+# transcripts / employee data once you run live Reads.
+/.felt-data/
 
 # vercel
 .vercel
